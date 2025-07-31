@@ -87,18 +87,18 @@ const conceptsNavigationConfig = [
                 },
                 subMenu: [
                     {
-                        key: 'concepts.projects.scrumBoard',
+                        key: 'concepts.projects.kanban',
                         path: `${CONCEPTS_PREFIX_PATH}/projects/scrum-board`,
-                        title: 'Scrum Board',
-                        translateKey: 'nav.conceptsProjects.scrumBoard',
+                        title: 'Kanban',
+                        translateKey: 'nav.conceptsProjects.kanban',
                         icon: 'projectScrumBoard',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [ADMIN, USER],
                         meta: {
                             description: {
                                 translateKey:
-                                    'nav.conceptsProjects.scrumBoardDesc',
-                                label: 'Manage your scrum workflow',
+                                    'nav.conceptsProjects.kanbanDesc',
+                                label: 'Manage your kanban workflow',
                             },
                         },
                         subMenu: [],

@@ -263,11 +263,125 @@ const TicketContent = ({ onTicketClose }) => {
                                     Due date:
                                 </div>
                                 <span className="font-semibold">
-                                    {dayjs(ticketData.dueDate).format(
-                                        'MMMM DD',
-                                    )}
+                                    {ticketData.dueDate ? dayjs(ticketData.dueDate).format('MMMM DD') : 'Not set'}
                                 </span>
                             </div>
+                            
+                            {ticketData.assignedTo && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Assigned To:
+                                    </div>
+                                    <span>{ticketData.assignedTo}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.label && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Label:
+                                    </div>
+                                    <span>{ticketData.label}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.entryDate && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Entry Date:
+                                    </div>
+                                    <span>{dayjs(ticketData.entryDate).format('MMMM DD, YYYY')}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.empreendimento && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Empreendimento:
+                                    </div>
+                                    <span>{ticketData.empreendimento}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.unidade && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Unidade:
+                                    </div>
+                                    <span>{ticketData.unidade}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.matricula && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Matrícula:
+                                    </div>
+                                    <span>{ticketData.matricula}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.ordem && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Ordem:
+                                    </div>
+                                    <span>{ticketData.ordem}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.tipo && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Tipo:
+                                    </div>
+                                    <span>{ticketData.tipo}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.natureza && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Natureza:
+                                    </div>
+                                    <span>{ticketData.natureza}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.custas && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Custas:
+                                    </div>
+                                    <span>{ticketData.custas}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.vencimentoMatricula && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Vencimento Matrícula:
+                                    </div>
+                                    <span>{ticketData.vencimentoMatricula}</span>
+                                </div>
+                            )}
+                            
+                            {ticketData.envioEscritura && (
+                                <div className="flex items-center min-h-[30px]">
+                                    <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                        Envio Escritura:
+                                    </div>
+                                    <span>{dayjs(ticketData.envioEscritura).format('MMMM DD, YYYY')}</span>
+                                </div>
+                            )}
+                            
+                            <div className="flex items-center min-h-[30px]">
+                                <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
+                                    Minuta Aprovada:
+                                </div>
+                                <span>{ticketData.minutaAprovada ? 'Yes' : 'No'}</span>
+                            </div>
+                            
                             {ticketData.description && (
                                 <div className="flex">
                                     <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">

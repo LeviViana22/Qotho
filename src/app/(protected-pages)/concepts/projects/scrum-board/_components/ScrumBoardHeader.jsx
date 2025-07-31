@@ -20,11 +20,26 @@ const ScrumBoardHeader = ({ boardMembers = [] }) => {
         openDialog()
     }
 
+    const handleAddNewTask = () => {
+        updateDialogView('NEW_TICKET')
+        openDialog()
+    }
+
     return (
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div>
-                <h3>Sprint 2</h3>
-                <p className="font-semibold">Web App Project</p>
+            <div className="flex items-center gap-4">
+                <div>
+                    <h3>Sprint 2</h3>
+                    <p className="font-semibold">Web App Project</p>
+                </div>
+                <Button
+                    size="sm"
+                    variant="solid"
+                    icon={<TbPlus />}
+                    onClick={handleAddNewTask}
+                >
+                    Add Task
+                </Button>
             </div>
             <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4">
                 <div className="flex flex-col md:flex-row md:items-center gap-4">

@@ -134,7 +134,7 @@ const Board = (props) => {
             </AdaptiveCard>
             <Dialog
                 isOpen={dialogOpen}
-                width={dialogView === 'TICKET' ? 700 : 520}
+                width={dialogView === 'TICKET' || dialogView === 'NEW_TICKET' ? 700 : 520}
                 closable={dialogView !== 'TICKET'}
                 onClose={onDialogClose}
                 onRequestClose={onDialogClose}

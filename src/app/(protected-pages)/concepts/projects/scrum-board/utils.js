@@ -14,7 +14,7 @@ export const createUID = (len) => {
 export const createCardObject = () => {
     return {
         id: createUID(10),
-        name: 'Untitled Card',
+        name: 'Untitled Task',
         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
         cover: '',
         members: [],
@@ -22,6 +22,19 @@ export const createCardObject = () => {
         attachments: [],
         comments: [],
         dueDate: null,
+        assignedTo: '',
+        label: '',
+        entryDate: null,
+        empreendimento: '',
+        unidade: '',
+        matricula: '',
+        ordem: '',
+        tipo: '',
+        natureza: '',
+        custas: '',
+        vencimentoMatricula: '',
+        envioEscritura: null,
+        minutaAprovada: false,
     }
 }
 

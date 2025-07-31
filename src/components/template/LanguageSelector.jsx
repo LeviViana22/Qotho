@@ -11,9 +11,6 @@ import { useLocale } from 'next-intl'
 const languageList = [
     { label: 'English', value: 'en', flag: 'US' },
     { label: 'Português', value: 'pt', flag: 'BR' },
-    { label: 'Chinese', value: 'zh', flag: 'CN' },
-    { label: 'Espanol', value: 'es', flag: 'ES' },
-    { label: 'Arabic', value: 'ar', flag: 'SA' },
 ]
 
 const _LanguageSelector = ({ className }) => {
