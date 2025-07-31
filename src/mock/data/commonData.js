@@ -524,9 +524,9 @@ export const searchQueryPoolData = [
         categoryTitle: 'Concepts',
     },
     {
-        key: 'concepts.projects.scrumBoard',
+        key: 'concepts.projects.kanban',
         path: `${CONCEPTS_PREFIX_PATH}/projects/scrum-board`,
-        title: 'Scrum Board',
+        title: 'Kanban',
         icon: 'projectScrumBoard',
         category: 'Projects',
         categoryTitle: 'Concepts',

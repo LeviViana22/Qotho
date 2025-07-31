@@ -92,14 +92,6 @@ const AddNewTicketContent = () => {
         resolver: zodResolver(validationSchema),
     })
 
-    // Watch individual fields to prevent unnecessary re-renders
-    const empreendimentoValue = watch('empreendimento')
-    const unidadeValue = watch('unidade')
-    const matriculaValue = watch('matricula')
-    const ordemValue = watch('ordem')
-    const naturezaValue = watch('natureza')
-    const vencimentoMatriculaValue = watch('vencimentoMatricula')
-
     const handleLabelSelect = (labelValue) => {
         if (!selectedLabels.includes(labelValue)) {
             setSelectedLabels([...selectedLabels, labelValue])
@@ -108,10 +100,6 @@ const AddNewTicketContent = () => {
 
     const handleLabelRemove = (labelValue) => {
         setSelectedLabels(selectedLabels.filter(label => label !== labelValue))
-    }
-
-    const handleClearField = (fieldName) => {
-        setValue(fieldName, '')
     }
 
     const onFormSubmit = async (formData) => {
@@ -306,17 +294,6 @@ const AddNewTicketContent = () => {
                                     type="text"
                                     autoComplete="off"
                                     placeholder="Enter empreendimento"
-                                    suffix={
-                                        empreendimentoValue ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleClearField('empreendimento')}
-                                                className="text-gray-400 hover:text-gray-600"
-                                            >
-                                                <TbX />
-                                            </button>
-                                        ) : null
-                                    }
                                     {...field}
                                 />
                             )}
@@ -336,17 +313,6 @@ const AddNewTicketContent = () => {
                                     type="text"
                                     autoComplete="off"
                                     placeholder="Enter unidade"
-                                    suffix={
-                                        unidadeValue ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleClearField('unidade')}
-                                                className="text-gray-400 hover:text-gray-600"
-                                            >
-                                                <TbX />
-                                            </button>
-                                        ) : null
-                                    }
                                     {...field}
                                 />
                             )}
@@ -366,17 +332,6 @@ const AddNewTicketContent = () => {
                                     type="text"
                                     autoComplete="off"
                                     placeholder="Enter matrícula"
-                                    suffix={
-                                        matriculaValue ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleClearField('matricula')}
-                                                className="text-gray-400 hover:text-gray-600"
-                                            >
-                                                <TbX />
-                                            </button>
-                                        ) : null
-                                    }
                                     {...field}
                                 />
                             )}
@@ -396,17 +351,6 @@ const AddNewTicketContent = () => {
                                     type="text"
                                     autoComplete="off"
                                     placeholder="Enter ordem"
-                                    suffix={
-                                        ordemValue ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleClearField('ordem')}
-                                                className="text-gray-400 hover:text-gray-600"
-                                            >
-                                                <TbX />
-                                            </button>
-                                        ) : null
-                                    }
                                     {...field}
                                 />
                             )}
@@ -445,17 +389,6 @@ const AddNewTicketContent = () => {
                                     type="text"
                                     autoComplete="off"
                                     placeholder="Enter natureza"
-                                    suffix={
-                                        naturezaValue ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleClearField('natureza')}
-                                                className="text-gray-400 hover:text-gray-600"
-                                            >
-                                                <TbX />
-                                            </button>
-                                        ) : null
-                                    }
                                     {...field}
                                 />
                             )}
@@ -494,17 +427,6 @@ const AddNewTicketContent = () => {
                                     type="text"
                                     autoComplete="off"
                                     placeholder="Enter vencimento matrícula"
-                                    suffix={
-                                        vencimentoMatriculaValue ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleClearField('vencimentoMatricula')}
-                                                className="text-gray-400 hover:text-gray-600"
-                                            >
-                                                <TbX />
-                                            </button>
-                                        ) : null
-                                    }
                                     {...field}
                                 />
                             )}

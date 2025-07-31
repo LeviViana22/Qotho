@@ -18,7 +18,7 @@ const conceptsRoute = {
         },
     },
     '/concepts/projects/scrum-board': {
-        key: 'concepts.projects.scrumBoard',
+        key: 'concepts.projects.kanban',
         authority: [ADMIN, USER],
         meta: {
             pageContainerType: 'contained',
