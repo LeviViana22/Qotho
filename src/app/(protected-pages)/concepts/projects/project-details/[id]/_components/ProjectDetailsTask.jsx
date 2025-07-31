@@ -9,7 +9,7 @@ import { TbCircleCheck, TbCircleCheckFilled } from 'react-icons/tb'
 import useSWR from 'swr'
 import dayjs from 'dayjs'
 
-const ordered = ['To Do', 'In Progress', 'To Review', 'Completed']
+const ordered = ['Triagem de Documentos', 'Aguardando Digitação', 'Aguardando 1ª Conferência', 'Aguardando 2ª Conferência', 'Aguardando Pagamento', 'Aguardando Assinatura', 'Em Registro', 'Registradas e/ou Prontas pra Entrega', 'Paradas']
 
 const taskLabelColors = {
     'Live issue': 'bg-rose-100 dark:bg-rose-100 dark:text-gray-900',

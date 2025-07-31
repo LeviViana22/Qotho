@@ -767,10 +767,15 @@ export const issueData = {
 }
 
 export const scrumboardData = {
-    'To Do': toBeProcessCards,
-    'In Progress': processingCards,
-    'To Review': submittedCards,
-    Completed: completedCards,
+    'Triagem de Documentos': toBeProcessCards,
+    'Aguardando Digitação': processingCards,
+    'Aguardando 1ª Conferência': submittedCards,
+    'Aguardando 2ª Conferência': completedCards,
+    'Aguardando Pagamento': [],
+    'Aguardando Assinatura': [],
+    'Em Registro': [],
+    'Registradas e/ou Prontas pra Entrega': [],
+    'Paradas': [],
 }
 
 export const taskBugFix = [
