@@ -40,18 +40,24 @@ function getWrapper(wrapperId) {
 const toast = (message) => toast.push(message)
 
 toast.push = (message, options = toastDefaultProps) => {
+    console.log('Toast.push called with:', { message, options })
+    
     let id = options.placement
     if (options.block) {
         id = castPlacment(options.placement)
     }
 
     const wrapper = getWrapper(id)
+    console.log('Toast wrapper found:', wrapper)
 
     if (wrapper?.current) {
+        console.log('Using existing wrapper')
         return wrapper.current.push(message)
     }
 
+    console.log('Creating new wrapper')
     return createWrapper(id ?? '', options).then((ref) => {
+        console.log('New wrapper created:', ref)
         return ref.current?.push(message)
     })
 }

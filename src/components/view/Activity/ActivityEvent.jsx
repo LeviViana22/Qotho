@@ -15,6 +15,8 @@ import {
     COMMENT_MENTION,
     ASSIGN_TICKET,
 } from './constants'
+import { ACTIVITY_TYPES, getFieldDisplayName } from '@/utils/activityUtils'
+import { TbFile } from 'react-icons/tb'
 
 const ticketStatus = {
     0: {
@@ -119,6 +121,17 @@ const ActivityEvent = ({ data, compact }) => {
                 </p>
             )
         case COMMENT:
+            const getCommentActionText = (action) => {
+                switch (action) {
+                    case 'edited':
+                        return 'editou comentário em'
+                    case 'removed':
+                        return 'removeu comentário de'
+                    default:
+                        return 'comentou em'
+                }
+            }
+            
             return (
                 <>
                     {compact ? (
@@ -132,15 +145,15 @@ const ActivityEvent = ({ data, compact }) => {
                                 </span>
                             </div>
                             <div className="mt-2">
-                                <span className="mx-1">comment on your</span>
-                                <HighlightedText>Post</HighlightedText>
+                                <span className="mx-1">{getCommentActionText(data.action)} </span>
+                                <HighlightedText>{data.ticket || 'PJ-1'}</HighlightedText>
                             </div>
                         </>
                     ) : (
                         <p className="gap-1 inline-flex items-center flex-wrap">
                             <HighlightedText>{data.userName}</HighlightedText>
-                            <span className="mx-1">comment on your</span>
-                            <HighlightedText>Post</HighlightedText>
+                            <span className="mx-1">{getCommentActionText(data.action)} </span>
+                            <HighlightedText>{data.ticket || 'PJ-1'}</HighlightedText>
                             <span className="ml-1 rtl:mr-1 md;ml-3 md:rtl:mr-3 font-semibold">
                                 <UnixDateTime value={data.dateTime} />
                             </span>
@@ -238,6 +251,7 @@ const ActivityEvent = ({ data, compact }) => {
                 </div>
             )
         case ADD_FILES_TO_TICKET:
+            const fileAction = data.action === 'removed' ? 'removeu' : 'adicionou'
             return compact ? (
                 <>
                     <div className="flex flex-col gap-y-0.5">
@@ -247,33 +261,37 @@ const ActivityEvent = ({ data, compact }) => {
                         </span>
                     </div>
                     <div className="mt-2">
-                        <span className="mx-1">added</span>
+                        <span className="mx-1">{fileAction} </span>
                         {data?.files?.map((file, index) => (
-                            <HighlightedText key={file + index}>
-                                {file}
+                            <span key={file + index} className="inline-flex items-center gap-1">
+                                <TbFile className="text-sm" />
+                                <HighlightedText>"{file}"</HighlightedText>
+                                <span className="mx-1"> em </span>
+                                <HighlightedText>{data.ticket}</HighlightedText>
                                 {!isLastChild(data?.files || [], index) && (
                                     <span className="ltr:mr-1 rtl:ml-1">
                                         ,{' '}
                                     </span>
                                 )}
-                            </HighlightedText>
+                            </span>
                         ))}
                     </div>
                 </>
             ) : (
                 <div className="inline-flex items-center flex-wrap">
                     <HighlightedText>{data.userName} </HighlightedText>
-                    <span className="mx-1">added</span>
+                    <span className="mx-1">{fileAction} </span>
                     {data?.files?.map((file, index) => (
-                        <HighlightedText key={file + index}>
-                            {file}
+                        <span key={file + index} className="inline-flex items-center gap-1">
+                            <TbFile className="text-sm" />
+                            <HighlightedText>"{file}"</HighlightedText>
                             {!isLastChild(data?.files || [], index) && (
                                 <span className="ltr:mr-1 rtl:ml-1">, </span>
                             )}
-                        </HighlightedText>
+                        </span>
                     ))}
-                    <span className="mx-1">to ticket</span>
-                    <HighlightedText>{data.ticket} </HighlightedText>
+                    <span className="mx-1">em </span>
+                    <HighlightedText>{data.ticket || 'PJ-1'} </HighlightedText>
                     <span className="ml-1 rtl:mr-1 md;ml-3 md:rtl:mr-3 font-semibold">
                         <UnixDateTime value={data.dateTime} />
                     </span>
@@ -318,6 +336,228 @@ const ActivityEvent = ({ data, compact }) => {
                     </span>
                 </div>
             )
+        case ACTIVITY_TYPES.UPDATE_STATUS:
+            return compact ? (
+                <>
+                    <div className="flex flex-col gap-y-0.5">
+                        <HighlightedText>{data.userName}</HighlightedText>
+                        <span className="text-xs font-semibold">
+                            <UnixDateTime value={data.dateTime} />
+                        </span>
+                    </div>
+                    <div className="mt-2">
+                        <span className="mx-1">alterou o status de </span>
+                        <HighlightedText>{data.ticket}</HighlightedText>
+                        <span className="mx-1"> para </span>
+                        <HighlightedText>"{data.statusLabel}"</HighlightedText>
+                    </div>
+                </>
+            ) : (
+                <p className="my-1">
+                    <HighlightedText>{data.userName}</HighlightedText>
+                    <span className="mx-1">alterou o status de </span>
+                    <HighlightedText>{data.ticket}</HighlightedText>
+                    <span className="mx-1"> para </span>
+                    <HighlightedText>"{data.statusLabel}"</HighlightedText>
+                    <span className="ml-1 rtl:mr-1 md;ml-3 md:rtl:mr-3 font-semibold">
+                        <UnixDateTime value={data.dateTime} />
+                    </span>
+                </p>
+            )
+        case ACTIVITY_TYPES.UPDATE_FIELD:
+            const fieldName = getFieldDisplayName(data.field)
+            return compact ? (
+                <>
+                    <div className="flex flex-col gap-y-0.5">
+                        <HighlightedText>{data.userName}</HighlightedText>
+                        <span className="text-xs font-semibold">
+                            <UnixDateTime value={data.dateTime} />
+                        </span>
+                    </div>
+                    <div className="mt-2">
+                        <span className="mx-1">atualizou </span>
+                        <HighlightedText>{fieldName}</HighlightedText>
+                        <span className="mx-1"> de </span>
+                        <HighlightedText>{data.ticket}</HighlightedText>
+                        <span className="mx-1"> de </span>
+                        <HighlightedText>"{data.oldValue || 'vazio'}"</HighlightedText>
+                        <span className="mx-1"> para </span>
+                        <HighlightedText>"{data.newValue || 'vazio'}"</HighlightedText>
+                    </div>
+                </>
+            ) : (
+                <p className="my-1">
+                    <HighlightedText>{data.userName}</HighlightedText>
+                    <span className="mx-1">atualizou </span>
+                    <HighlightedText>{fieldName}</HighlightedText>
+                    <span className="mx-1"> de </span>
+                    <HighlightedText>{data.ticket}</HighlightedText>
+                    <span className="mx-1"> de </span>
+                    <HighlightedText>"{data.oldValue || 'vazio'}"</HighlightedText>
+                    <span className="mx-1"> para </span>
+                    <HighlightedText>"{data.newValue || 'vazio'}"</HighlightedText>
+                    <span className="ml-1 rtl:mr-1 md;ml-3 md:rtl:mr-3 font-semibold">
+                        <UnixDateTime value={data.dateTime} />
+                    </span>
+                </p>
+            )
+        case ACTIVITY_TYPES.ADD_PENDING_ITEM:
+            return compact ? (
+                <>
+                    <div className="flex flex-col gap-y-0.5">
+                        <HighlightedText>{data.userName}</HighlightedText>
+                        <span className="text-xs font-semibold">
+                            <UnixDateTime value={data.dateTime} />
+                        </span>
+                    </div>
+                    <div className="mt-2">
+                        <span className="mx-1">adicionou pendência: </span>
+                        <HighlightedText>"{data.pendingItem}"</HighlightedText>
+                        <span className="mx-1"> em </span>
+                        <HighlightedText>{data.ticket}</HighlightedText>
+                    </div>
+                </>
+            ) : (
+                <p className="my-1">
+                    <HighlightedText>{data.userName}</HighlightedText>
+                    <span className="mx-1">adicionou pendência: </span>
+                    <HighlightedText>"{data.pendingItem}"</HighlightedText>
+                    <span className="ml-1 rtl:mr-1 md;ml-3 md:rtl:mr-3 font-semibold">
+                        <UnixDateTime value={data.dateTime} />
+                    </span>
+                </p>
+            )
+        case ACTIVITY_TYPES.TOGGLE_PENDING_ITEM:
+            const action = data.completed ? 'concluiu' : 'desmarcou'
+            return compact ? (
+                <>
+                    <div className="flex flex-col gap-y-0.5">
+                        <HighlightedText>{data.userName}</HighlightedText>
+                        <span className="text-xs font-semibold">
+                            <UnixDateTime value={data.dateTime} />
+                        </span>
+                    </div>
+                    <div className="mt-2">
+                        <span className="mx-1">{action} pendência: </span>
+                        <HighlightedText>"{data.pendingItem}"</HighlightedText>
+                        <span className="mx-1"> em </span>
+                        <HighlightedText>{data.ticket}</HighlightedText>
+                    </div>
+                </>
+            ) : (
+                <p className="my-1">
+                    <HighlightedText>{data.userName}</HighlightedText>
+                    <span className="mx-1">{action} pendência: </span>
+                    <HighlightedText>"{data.pendingItem}"</HighlightedText>
+                    <span className="ml-1 rtl:mr-1 md;ml-3 md:rtl:mr-3 font-semibold">
+                        <UnixDateTime value={data.dateTime} />
+                        <span className="mx-1"> em </span>
+                        <HighlightedText>{data.ticket}</HighlightedText>                        
+                    </span>
+                </p>
+            )
+        case ACTIVITY_TYPES.REMOVE_PENDING_ITEM:
+            return compact ? (
+                <>
+                    <div className="flex flex-col gap-y-0.5">
+                        <HighlightedText>{data.userName}</HighlightedText>
+                        <span className="text-xs font-semibold">
+                            <UnixDateTime value={data.dateTime} />
+                        </span>
+                    </div>
+                    <div className="mt-2">
+                        <span className="mx-1">removeu pendência: </span>
+                        <HighlightedText>"{data.pendingItem}"</HighlightedText>
+                        <span className="mx-1"> em </span>
+                        <HighlightedText>{data.ticket}</HighlightedText>
+                    </div>
+                </>
+            ) : (
+                <p className="my-1">
+                    <HighlightedText>{data.userName}</HighlightedText>
+                    <span className="mx-1">removeu pendência: </span>
+                    <HighlightedText>"{data.pendingItem}"</HighlightedText>
+                    <span className="ml-1 rtl:mr-1 md;ml-3 md:rtl:mr-3 font-semibold">
+                        <UnixDateTime value={data.dateTime} />
+                    </span>
+                </p>
+            )
+        
+        case ACTIVITY_TYPES.PROJECT_COMPLETED:
+            return compact ? (
+                <>
+                    <div className="flex flex-col gap-y-0.5">
+                        <HighlightedText>{data.userName}</HighlightedText>
+                        <span className="text-xs font-semibold">
+                            <UnixDateTime value={data.dateTime} />
+                        </span>
+                    </div>
+                    <div className="mt-2">
+                        <span className="mx-1">concluiu o projeto </span>
+                        <HighlightedText>{data.ticket}</HighlightedText>
+                    </div>
+                </>
+            ) : (
+                <p className="my-1">
+                    <HighlightedText>{data.userName}</HighlightedText>
+                    <span className="mx-1">concluiu o projeto </span>
+                    <HighlightedText>{data.ticket}</HighlightedText>
+                    <span className="ml-1 rtl:mr-1 md;ml-3 md:rtl:mr-3 font-semibold">
+                        <UnixDateTime value={data.dateTime} />
+                    </span>
+                </p>
+            )
+        
+        case ACTIVITY_TYPES.PROJECT_CANCELLED:
+            return compact ? (
+                <>
+                    <div className="flex flex-col gap-y-0.5">
+                        <HighlightedText>{data.userName}</HighlightedText>
+                        <span className="text-xs font-semibold">
+                            <UnixDateTime value={data.dateTime} />
+                        </span>
+                    </div>
+                    <div className="mt-2">
+                        <span className="mx-1">cancelou o projeto </span>
+                        <HighlightedText>{data.ticket}</HighlightedText>
+                    </div>
+                </>
+            ) : (
+                <p className="my-1">
+                    <HighlightedText>{data.userName}</HighlightedText>
+                    <span className="mx-1">cancelou o projeto </span>
+                    <HighlightedText>{data.ticket}</HighlightedText>
+                    <span className="ml-1 rtl:mr-1 md;ml-3 md:rtl:mr-3 font-semibold">
+                        <UnixDateTime value={data.dateTime} />
+                    </span>
+                </p>
+            )
+        
+        case ACTIVITY_TYPES.PROJECT_RESTORED:
+            return compact ? (
+                <>
+                    <div className="flex flex-col gap-y-0.5">
+                        <HighlightedText>{data.userName}</HighlightedText>
+                        <span className="text-xs font-semibold">
+                            <UnixDateTime value={data.dateTime} />
+                        </span>
+                    </div>
+                    <div className="mt-2">
+                        <span className="mx-1">restaurou o projeto </span>
+                        <HighlightedText>{data.ticket}</HighlightedText>
+                    </div>
+                </>
+            ) : (
+                <p className="my-1">
+                    <HighlightedText>{data.userName}</HighlightedText>
+                    <span className="mx-1">restaurou o projeto </span>
+                    <HighlightedText>{data.ticket}</HighlightedText>
+                    <span className="ml-1 rtl:mr-1 md;ml-3 md:rtl:mr-3 font-semibold">
+                        <UnixDateTime value={data.dateTime} />
+                    </span>
+                </p>
+            )
+
         default:
             return null
     }

@@ -31,9 +31,9 @@ export async function GET(request) {
 export async function POST(req) {
     const { prompt } = await req.json()
 
-    const imageSet = generatedImageData[
-        Math.floor(Math.random() * generatedImageData.length)
-    ].map((img) => {
+    // Use deterministic selection instead of random
+    const imageIndex = 0 // Always use first image set for consistency
+    const imageSet = generatedImageData[imageIndex].map((img) => {
         img.prompt = prompt
         return img
     })

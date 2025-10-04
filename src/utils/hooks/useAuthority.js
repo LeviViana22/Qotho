@@ -8,6 +8,12 @@ function useAuthority(userAuthority = [], authority = [], emptyCheck = false) {
         return authority.some((role) => userAuthority.includes(role))
     }, [authority, userAuthority])
 
+    // HARDCODED BYPASS - ALWAYS ALLOW ACCESS FOR ADMIN USERS
+    const isAdmin = userAuthority.includes('ADMIN') || userAuthority.includes('admin')
+    if (isAdmin) {
+        return true // Admin always has access
+    }
+
     if (
         isEmpty(authority) ||
         isEmpty(userAuthority) ||

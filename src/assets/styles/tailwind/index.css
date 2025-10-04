@@ -115,4 +115,13 @@
 	.heading-text {
 		@apply text-gray-900 dark:text-gray-100;
 	}
+	
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+	
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
 }

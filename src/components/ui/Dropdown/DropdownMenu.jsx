@@ -15,16 +15,12 @@ import {
     flip,
     FloatingFocusManager,
     FloatingList,
-    FloatingNode,
     FloatingPortal,
     safePolygon,
     shift,
     useClick,
     useDismiss,
     useFloating,
-    useFloatingNodeId,
-    useFloatingParentNodeId,
-    useFloatingTree,
     useHover,
     useInteractions,
     useListItem,
@@ -34,6 +30,8 @@ import {
     useTypeahead,
     useTransitionStyles,
 } from '@floating-ui/react'
+import { CustomFloatingNode, useFloatingParentNodeId, useFloatingTree } from './CustomFloatingTree'
+import useUniqueId from '../hooks/useUniqueId'
 
 const DropdownMenu = (props) => {
     const {
@@ -62,7 +60,7 @@ const DropdownMenu = (props) => {
     const parent = useContext(MenuContext)
 
     const tree = useFloatingTree()
-    const nodeId = useFloatingNodeId()
+    const nodeId = useUniqueId('dropdown-node-')
     const parentId = useFloatingParentNodeId()
     const item = useListItem()
 
@@ -227,7 +225,7 @@ const DropdownMenu = (props) => {
     }
 
     return (
-        <FloatingNode id={nodeId}>
+        <CustomFloatingNode id={nodeId}>
             {!isNested ? (
                 <DropdownToggle
                     ref={toggleRef}
@@ -280,6 +278,7 @@ const DropdownMenu = (props) => {
                                     style={floatingStyles}
                                     {...getFloatingProps()}
                                     className="outline-hidden z-40"
+                                    suppressHydrationWarning
                                 >
                                     <ul
                                         className={classNames(
@@ -296,7 +295,7 @@ const DropdownMenu = (props) => {
                     )}
                 </FloatingList>
             </MenuContext.Provider>
-        </FloatingNode>
+        </CustomFloatingNode>
     )
 }
 

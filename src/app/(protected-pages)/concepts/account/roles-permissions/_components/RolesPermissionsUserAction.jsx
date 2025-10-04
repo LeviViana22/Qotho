@@ -10,19 +10,19 @@ import { components } from 'react-select'
 const { Control } = components
 
 const statusOptions = [
-    { label: 'All', value: '', dotBackground: 'bg-gray-200' },
-    { label: 'Active', value: 'active', dotBackground: 'bg-success' },
-    { label: 'Blocked', value: 'blocked', dotBackground: 'bg-error' },
+    { label: 'Todos', value: '', dotBackground: 'bg-gray-200' },
+    { label: 'Ativo', value: 'active', dotBackground: 'bg-success' },
+    { label: 'Bloqueado', value: 'blocked', dotBackground: 'bg-error' },
 ]
 
 const roleOptions = [
-    { label: 'All', value: '' },
-    { label: 'Admin', value: 'admin' },
+    { label: 'Todos', value: '' },
+    { label: 'Administrador', value: 'admin' },
     { label: 'Supervisor', value: 'supervisor' },
-    { label: 'Support', value: 'support' },
-    { label: 'User', value: 'user' },
+    { label: 'Suporte', value: 'support' },
+    { label: 'Usuário', value: 'user' },
     { label: 'Auditor', value: 'auditor' },
-    { label: 'Guest', value: 'guest' },
+    { label: 'Convidado', value: 'guest' },
 ]
 
 const StatusSelectOption = (props) => {
@@ -94,7 +94,7 @@ const RolesPermissionsUserAction = () => {
         <div className="flex items-center justify-between">
             <DebouceInput
                 className="max-w-[300px]"
-                placeholder="Search..."
+                placeholder="Procurar..."
                 type="text"
                 size="sm"
                 prefix={<TbSearch className="text-lg" />}
@@ -112,8 +112,8 @@ const RolesPermissionsUserAction = () => {
                     size="sm"
                     placeholder="Status"
                     defaultValue={{
-                        label: 'All',
-                        value: '',
+                        label: 'Todos',
+                        value: 'Todos',
                         dotBackground: 'bg-gray-200',
                     }}
                     onChange={(option) =>
@@ -129,7 +129,7 @@ const RolesPermissionsUserAction = () => {
                     options={roleOptions}
                     size="sm"
                     placeholder="Role"
-                    defaultValue={{ label: 'All', value: '' }}
+                    defaultValue={{ label: 'Todos', value: '' }}
                     value={roleOptions.find(
                         (option) => option.value === filterData.role,
                     )}

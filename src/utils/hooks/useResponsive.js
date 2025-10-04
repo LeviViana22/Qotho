@@ -68,7 +68,31 @@ const getResponsiveState = () => {
 }
 
 const useResponsive = () => {
-    const [responsive, setResponsive] = useState(getResponsiveState())
+    const [responsive, setResponsive] = useState(() => {
+        // Return default state during SSR
+        if (!isBrowser) {
+            return {
+                windowWidth: 0,
+                larger: {
+                    lg: false,
+                    md: false,
+                    sm: false,
+                    xs: false,
+                    xl: false,
+                    '2xl': false,
+                },
+                smaller: {
+                    lg: false,
+                    md: false,
+                    sm: false,
+                    xs: false,
+                    xl: false,
+                    '2xl': false,
+                },
+            }
+        }
+        return getResponsiveState()
+    })
 
     const resizeHandler = () => {
         const responsiveState = getResponsiveState()
@@ -77,9 +101,13 @@ const useResponsive = () => {
 
     useEffect(() => {
         if (!isBrowser) return
+        
+        // Set initial state on client mount
+        setResponsive(getResponsiveState())
+        
         window.addEventListener('resize', resizeHandler)
         return () => window.removeEventListener('resize', resizeHandler)
-    }, [responsive.windowWidth])
+    }, [])
 
     return responsive
 }

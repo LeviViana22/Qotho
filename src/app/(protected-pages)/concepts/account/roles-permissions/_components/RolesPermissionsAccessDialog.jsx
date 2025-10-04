@@ -111,19 +111,19 @@ const RolesPermissionsAccessDialog = () => {
             onClose={handleClose}
             onRequestClose={handleClose}
         >
-            <h4>{roleDialog.type === 'new' ? 'Create role' : modules?.name}</h4>
+            <h4>{roleDialog.type === 'new' ? 'Criar função' : modules?.name}</h4>
             <ScrollBar className="mt-6 max-h-[600px] overflow-y-auto">
                 <div className="px-4">
                     {roleDialog.type === 'new' && (
                         <>
-                            <FormItem label="Role name">
+                            <FormItem label="Nome da função">
                                 <Input ref={roleNameRef} />
                             </FormItem>
-                            <FormItem label="Description">
+                            <FormItem label="Descrição">
                                 <Input ref={descriptionRef} textArea />
                             </FormItem>
                             <span className="font-semibold mb-2">
-                                Permission
+                                Permissões
                             </span>
                         </>
                     )}
@@ -208,7 +208,7 @@ const RolesPermissionsAccessDialog = () => {
                             variant="plain"
                             onClick={handleClose}
                         >
-                            Cancel
+                            Cancelar
                         </Button>
                         <Button
                             variant="solid"
@@ -218,7 +218,7 @@ const RolesPermissionsAccessDialog = () => {
                                     : handleSubmit
                             }
                         >
-                            {roleDialog.type === 'edit' ? 'Update' : 'Create'}
+                            {roleDialog.type === 'edit' ? 'Atualizar' : 'Criar'}
                         </Button>
                     </div>
                 </div>

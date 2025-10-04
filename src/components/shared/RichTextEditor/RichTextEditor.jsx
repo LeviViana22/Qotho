@@ -47,6 +47,7 @@ const RichTextEditor = (props) => {
                   },
               },
               content,
+              immediatelyRender: false,
               onUpdate({ editor }) {
                   onChange?.({
                       text: editor.getText(),

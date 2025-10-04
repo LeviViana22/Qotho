@@ -114,7 +114,7 @@ const DateTimepicker = (props) => {
             date.setHours(_value.getHours())
             date.setMinutes(_value.getMinutes())
         } else {
-            const now = new Date(Date.now())
+            const now = new Date('2022-01-01T12:00:00Z') // Fixed date for SSR compatibility
             date.setHours(now.getHours())
             date.setMinutes(now.getMinutes())
         }

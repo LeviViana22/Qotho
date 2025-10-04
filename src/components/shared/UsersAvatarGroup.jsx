@@ -41,24 +41,32 @@ const UsersAvatarGroup = (props) => {
             {...avatarGroupProps}
             {...rest}
         >
-            {users.map((elm, index) => (
-                <Tooltip
-                    key={elm[nameKey] + index}
-                    wrapperClass="flex"
-                    title={elm[nameKey]}
-                >
-                    <Avatar
-                        {...defaultAvatarProps}
-                        className={`${
-                            elm[imgKey] ? '' : bgColor(elm[nameKey])
-                        } ${defaultAvatarProps.className}`}
-                        src={elm[imgKey]}
-                        onClick={() => handleAvatarClick(elm)}
+            {(users || []).map((elm, index) => {
+                // Safety check for null/undefined user objects
+                if (!elm) return null
+                
+                const userName = elm[nameKey] || 'Unknown'
+                const userImg = elm[imgKey] || ''
+                
+                return (
+                    <Tooltip
+                        key={userName + index}
+                        wrapperClass="flex"
+                        title={userName}
                     >
-                        {acronym(elm.name)}
-                    </Avatar>
-                </Tooltip>
-            ))}
+                        <Avatar
+                            {...defaultAvatarProps}
+                            className={`${
+                                userImg ? '' : bgColor(userName)
+                            } ${defaultAvatarProps.className}`}
+                            src={userImg}
+                            onClick={() => handleAvatarClick(elm)}
+                        >
+                            {acronym(userName)}
+                        </Avatar>
+                    </Tooltip>
+                )
+            })}
         </Avatar.Group>
     )
 }

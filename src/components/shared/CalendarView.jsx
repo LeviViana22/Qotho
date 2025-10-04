@@ -50,6 +50,10 @@ const CalendarView = (props) => {
                 eventContent={(arg) => {
                     const { extendedProps } = arg.event
                     const { isEnd, isStart } = arg
+                    
+                    // Use custom eventTime if available, otherwise use FullCalendar's timeText
+                    const displayTime = extendedProps.eventTime || arg.timeText
+                    
                     return (
                         <div
                             className={classNames(
@@ -75,7 +79,7 @@ const CalendarView = (props) => {
                             )}
                         >
                             {!(isEnd && !isStart) && (
-                                <span>{arg.timeText}</span>
+                                <span>{displayTime}</span>
                             )}
                             <span className="font-bold ml-1 rtl:mr-1">
                                 {arg.event.title}

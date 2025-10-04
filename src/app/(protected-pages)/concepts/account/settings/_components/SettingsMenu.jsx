@@ -7,19 +7,15 @@ import {
     TbUserSquare,
     TbLock,
     TbBell,
-    TbFileDollar,
-    TbRefreshDot,
 } from 'react-icons/tb'
 import { useSearchParams } from 'next/navigation'
 
 const { MenuItem } = Menu
 
 const menuList = [
-    { label: 'Profile', value: 'profile', icon: <TbUserSquare /> },
-    { label: 'Security', value: 'security', icon: <TbLock /> },
-    { label: 'Notification', value: 'notification', icon: <TbBell /> },
-    { label: 'Billing', value: 'billing', icon: <TbFileDollar /> },
-    { label: 'Integration', value: 'integration', icon: <TbRefreshDot /> },
+    { label: 'Perfil', value: 'profile', icon: <TbUserSquare /> },
+    { label: 'Segurança', value: 'security', icon: <TbLock /> },
+    { label: 'Notificações', value: 'notification', icon: <TbBell /> },
 ]
 
 export const SettingsMenu = ({ onChange }) => {

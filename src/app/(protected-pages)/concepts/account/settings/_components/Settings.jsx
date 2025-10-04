@@ -10,8 +10,6 @@ import { useSettingsStore } from '../_store/settingsStore'
 const Profile = lazy(() => import('./SettingsProfile'))
 const Security = lazy(() => import('./SettingsSecurity'))
 const Notification = lazy(() => import('./SettingsNotification'))
-const Billing = lazy(() => import('./SettingsBilling'))
-const Integration = lazy(() => import('./SettingIntegration'))
 
 const Settings = () => {
     const { currentView } = useSettingsStore()
@@ -32,8 +30,6 @@ const Settings = () => {
                         {currentView === 'profile' && <Profile />}
                         {currentView === 'security' && <Security />}
                         {currentView === 'notification' && <Notification />}
-                        {currentView === 'billing' && <Billing />}
-                        {currentView === 'integration' && <Integration />}
                     </Suspense>
                 </div>
             </div>

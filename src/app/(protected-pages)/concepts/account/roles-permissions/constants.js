@@ -1,95 +1,95 @@
 export const accessModules = [
     {
         id: 'users',
-        name: 'User management',
-        description: 'Access control for user management',
+        name: 'Gestão de usuários',
+        description: 'Acessar, editar e excluir usuários',
         accessor: [
             {
-                label: 'Read',
+                label: 'Ler',
                 value: 'read',
             },
             {
-                label: 'Write',
+                label: 'Escrever',
                 value: 'write',
             },
             {
-                label: 'Delete',
+                label: 'Excluir',
                 value: 'delete',
             },
         ],
     },
     {
         id: 'products',
-        name: 'Products authority',
-        description: 'Access control for product operations',
+        name: 'Autoridade de produtos',
+        description: 'Acessar, editar e excluir produtos',
         accessor: [
             {
-                label: 'Read',
+                label: 'Ler',
                 value: 'read',
             },
             {
-                label: 'Write',
+                label: 'Escrever',
                 value: 'write',
             },
             {
-                label: 'Delete',
+                label: 'Excluir',
                 value: 'delete',
             },
         ],
     },
     {
         id: 'configurations',
-        name: 'System configurations',
-        description: 'Access control for system settings',
+        name: 'Configurações do sistema',
+        description: 'Acessar, editar e excluir configurações do sistema',
         accessor: [
             {
-                label: 'Read',
+                label: 'Ler',
                 value: 'read',
             },
             {
-                label: 'Write',
+                label: 'Escrever',
                 value: 'write',
             },
             {
-                label: 'Delete',
+                label: 'Excluir',
                 value: 'delete',
             },
         ],
     },
     {
         id: 'files',
-        name: 'File management',
-        description: 'Access control for file management',
+        name: 'Gestão de arquivos',
+        description: 'Acessar, editar e excluir arquivos',
         accessor: [
             {
-                label: 'Read',
+                label: 'Ler',
                 value: 'read',
             },
             {
-                label: 'Write',
+                label: 'Escrever',
                 value: 'write',
             },
             {
-                label: 'Delete',
+                label: 'Excluir',
                 value: 'delete',
             },
         ],
     },
     {
         id: 'reports',
-        name: 'Reports',
-        description: 'Access control for generating reports',
+        name: 'Relatórios',
+        description: 'Acessar, editar e excluir relatórios',
         accessor: [
             {
-                label: 'Read',
+                label: 'Ler',
                 value: 'read',
             },
             {
-                label: 'Write',
+                label: 'Escrever',
                 value: 'write',
             },
             {
-                label: 'Delete',
+                label: 'Excluir',
                 value: 'delete',
             },
         ],

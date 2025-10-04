@@ -7,7 +7,7 @@ import DropdownContext from './context/dropdownContext'
 import MenuContext from './context/menuContext'
 import MenuItem from '../MenuItem'
 import { DROPDOWN_ITEM_TYPE } from '../utils/constants'
-import { useFloatingTree } from '@floating-ui/react'
+import { useFloatingTree } from './CustomFloatingTree'
 
 const { DEFAULT, DIVIDER, HEADER, CUSTOM } = DROPDOWN_ITEM_TYPE
 

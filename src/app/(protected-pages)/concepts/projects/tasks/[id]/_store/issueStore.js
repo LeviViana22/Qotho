@@ -14,7 +14,10 @@ const initialState = {
 
 export const useIssueStore = create((set) => ({
     ...initialState,
-    updateIssueData: (payload) => set(() => ({ issueData: payload })),
+    updateIssueData: (payload) => set((state) => ({ 
+        ...state, 
+        issueData: { ...payload } 
+    })),
     setMembers: (payload) => set(() => ({ memberList: payload })),
     setInitialLoading: (payload) => set(() => ({ initialLoading: payload })),
 }))

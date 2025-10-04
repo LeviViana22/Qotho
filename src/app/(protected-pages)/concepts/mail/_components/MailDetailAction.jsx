@@ -6,7 +6,7 @@ import Badge from '@/components/ui/Badge'
 import ActionButton from './ActionButton'
 import { useMailStore } from '../_store/mailStore'
 import useMailAction from '../_hooks/useMailAction'
-import { labelList } from '../constants'
+import { groupList } from '../constants'
 import classNames from '@/utils/classNames'
 import {
     TbDotsVertical,
@@ -21,8 +21,12 @@ const MailDetailAction = () => {
     const dropdownRef = useRef(null)
 
     const { mail, toggleMessageDialog } = useMailStore()
+    const flaggedIds = useMailStore((state) => state.flaggedIds)
+    const toggleEmailFlag = useMailStore((state) => state.toggleEmailFlag)
+    const starredIds = useMailStore((state) => state.starredIds)
+    const toggleEmailStar = useMailStore((state) => state.toggleEmailStar)
 
-    const { onFlagToggle, onMoveMailClick, onStarToggle } = useMailAction()
+    const { onMoveMailClick } = useMailAction()
 
     const handleMoveMailClick = (destination) => {
         onMoveMailClick(mail, destination)
@@ -38,7 +42,7 @@ const MailDetailAction = () => {
 
     return (
         <div className="flex items-center gap-2">
-            <Tooltip title="Reply">
+            <Tooltip title="Responder">
                 <ActionButton onClick={handleReplyClick}>
                     <TbArrowBackUp />
                 </ActionButton>
@@ -54,46 +58,43 @@ const MailDetailAction = () => {
             >
                 <Dropdown.Item
                     eventKey="star"
-                    onClick={() => onStarToggle(mail)}
+                    onClick={() => toggleEmailStar(mail.id)}
                 >
                     <span className="text-lg">
-                        {mail.starred ? (
+                        {starredIds.has(mail.id) ? (
                             <TbStarFilled className="text-amber-500" />
                         ) : (
                             <TbStar />
                         )}
                     </span>
-                    <span>Star</span>
+                    <span>Favoritar</span>
                 </Dropdown.Item>
                 <Dropdown.Item
                     eventKey="flag"
-                    onClick={() => onFlagToggle(mail)}
+                    onClick={() => toggleEmailFlag(mail.id)}
                 >
-                    <TbFlag
-                        className={classNames(
-                            'text-lg',
-                            mail.flagged && 'text-red-500',
-                        )}
-                    />
-                    <span>Flag</span>
+                    <TbFlag className={classNames(
+                        'text-lg',
+                        flaggedIds.has(mail.id) ? 'text-red-500' : 'text-gray-400',
+                    )} />
+                    <span>Marcar</span>
                 </Dropdown.Item>
                 <Dropdown.Menu
                     renderTitle={
                         <>
                             <span className="flex items-center gap-2">
                                 <TbFolderSymlink className="text-lg" />
-                                <span>Move to</span>
+                                <span>Mover para</span>
                             </span>
                         </>
                     }
                     placement="left-start"
                 >
-                    {labelList.map((item) => (
+                    {groupList.filter(item => item.value !== 'deleted').map((item) => (
                         <Dropdown.Item
                             key={item.value}
                             onClick={() => handleMoveMailClick(item.value)}
                         >
-                            <Badge className={item.dotClass} />
                             <span>{item.label}</span>
                         </Dropdown.Item>
                     ))}

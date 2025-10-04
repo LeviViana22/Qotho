@@ -11,7 +11,8 @@ export const themeConfig = {
     panelExpand: false,
     controlSize: 'md',
     layout: {
-        type: THEME_ENUM.LAYOUT_COLLAPSIBLE_SIDE,
+        type: THEME_ENUM.LAYOUT_FRAMELESS_SIDE,
         sideNavCollapse: false,
     },
 }
+  

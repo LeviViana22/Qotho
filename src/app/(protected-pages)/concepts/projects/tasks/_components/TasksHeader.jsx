@@ -5,20 +5,36 @@ import Avatar from '@/components/ui/Avatar'
 import ScrollBar from '@/components/ui/ScrollBar'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
+import Dropdown from '@/components/ui/Dropdown'
+import Slider from '@/components/ui/Slider'
 import wildCardSearch from '@/utils/wildCardSearch'
 import UsersAvatarGroup from '@/components/shared/UsersAvatarGroup'
 import { useTasksStore } from '../_store/tasksStore'
-import { TbSearch, TbPlus } from 'react-icons/tb'
+import { useScrumBoardStore } from '../../scrum-board/_store/scrumBoardStore'
+import { TbSearch, TbPlus, TbChevronDown, TbSettings } from 'react-icons/tb'
 import classNames from '@/utils/classNames'
 import debounce from 'lodash/debounce'
 import cloneDeep from 'lodash/cloneDeep'
 
-const TasksHeader = () => {
+const TasksHeader = ({ columnWidths, onColumnWidthChange }) => {
     const inputRef = useRef(null)
 
     const [dialogOpen, setDialogOpen] = useState(false)
+    const [columnSettingsOpen, setColumnSettingsOpen] = useState(false)
 
-    const { allMembers, boardMembers, updateBoardMembers } = useTasksStore()
+    const { 
+        allMembers, 
+        boardMembers, 
+        updateBoardMembers,
+        currentView,
+        setCurrentView,
+        searchQuery,
+        setSearchQuery,
+        syncWithScrumBoard,
+        updateScrumBoard
+    } = useTasksStore()
+
+    const scrumBoardStore = useScrumBoardStore()
 
     const [memberList, setMemberList] = useState([])
 
@@ -27,6 +43,35 @@ const TasksHeader = () => {
             setMemberList(allMembers)
         }
     }, [allMembers])
+
+    // Synchronize with scrum board store
+    useEffect(() => {
+        // Get the current state from the scrum board store
+        const scrumBoardState = useScrumBoardStore.getState()
+        syncWithScrumBoard(() => scrumBoardState)
+    }, [syncWithScrumBoard])
+
+    // Atualizar diretamente o scrumBoardStore quando o tasksStore muda
+    // Usamos um ref para evitar atualizações desnecessárias
+    const prevValuesRef = useRef({ boardMembers, currentView, searchQuery })
+    
+    useEffect(() => {
+        // Verificar se os valores realmente mudaram para evitar atualizações desnecessárias
+        const prevValues = prevValuesRef.current
+        const boardMembersChanged = JSON.stringify(prevValues.boardMembers) !== JSON.stringify(boardMembers)
+        const currentViewChanged = prevValues.currentView !== currentView
+        const searchQueryChanged = prevValues.searchQuery !== searchQuery
+        
+        if (scrumBoardStore && (boardMembersChanged || currentViewChanged || searchQueryChanged)) {
+            // Atualizar diretamente o scrumBoardStore apenas se algo mudou
+            if (boardMembersChanged) scrumBoardStore.updateBoardMembers(boardMembers)
+            if (currentViewChanged) scrumBoardStore.setCurrentView(currentView)
+            if (searchQueryChanged) scrumBoardStore.setSearchQuery(searchQuery)
+            
+            // Atualizar os valores de referência
+            prevValuesRef.current = { boardMembers, currentView, searchQuery }
+        }
+    }, [boardMembers, currentView, searchQuery, scrumBoardStore])
 
     const debounceFn = debounce(handleDebounceFn, 500)
 
@@ -60,10 +105,27 @@ const TasksHeader = () => {
         setDialogOpen(false)
     }
 
+    const handleViewChange = (view) => {
+        setCurrentView(view)
+    }
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value)
+    }
+
+    const handleColumnWidthChange = (columnName, value) => {
+        if (onColumnWidthChange) {
+            onColumnWidthChange(columnName, value)
+        }
+    }
+
     return (
         <>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h3>Tasks</h3>
+                <div>
+                    <h3>Fluxo de Escrituras</h3>
+                    <p className="font-semibold">Tabelionato de Notas</p>
+                </div>
                 <div className="flex items-center gap-2">
                     <UsersAvatarGroup
                         className="flex items-center"
@@ -75,10 +137,102 @@ const TasksHeader = () => {
                         icon={<TbPlus />}
                         onClick={() => setDialogOpen(true)}
                     >
-                        Add members
+                        Adicionar Membros
                     </Button>
                 </div>
             </div>
+            
+            <div className="flex items-center justify-between gap-4 mt-4">
+                <div className="flex items-center gap-4">
+                    <Dropdown
+                        renderTitle={
+                            <div className="flex items-center gap-2">
+                                <Button size="sm">
+                                    {currentView === 'em-andamento' ? 'Em Andamento' : 'Finalizados'}
+                                </Button>
+                                <TbChevronDown className="text-lg" />
+                            </div>
+                        }
+                        placement="bottom-start"
+                    >
+                        <Dropdown.Item
+                            eventKey="em-andamento"
+                            onSelect={handleViewChange}
+                        >
+                            Em Andamento
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            eventKey="finalizados"
+                            onSelect={handleViewChange}
+                        >
+                            Finalizados
+                        </Dropdown.Item>
+                    </Dropdown>
+                    <Button
+                        size="sm"
+                        icon={<TbSettings />}
+                        onClick={() => setColumnSettingsOpen(true)}
+                    >
+                        Configurar Colunas
+                    </Button>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                    <Input
+                        placeholder="Buscar projetos..."
+                        prefix={<TbSearch className="text-lg" />}
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        className="w-64"
+                    />
+                </div>
+            </div>
+            
+            {/* Column Settings Dialog */}
+            <Dialog
+                isOpen={columnSettingsOpen}
+                width={600}
+                onClose={() => setColumnSettingsOpen(false)}
+                onRequestClose={() => setColumnSettingsOpen(false)}
+            >
+                <div>
+                    <div className="text-center mb-6">
+                        <h4 className="mb-1">Configurar Largura das Colunas</h4>
+                        <p>Ajuste a largura das colunas da tabela</p>
+                    </div>
+                    <div className="space-y-4">
+                        {Object.entries(columnWidths || {}).map(([columnName, width]) => (
+                            <div key={columnName} className="flex items-center gap-4">
+                                <div className="w-32 text-sm font-medium">
+                                    {columnName}
+                                </div>
+                                <div className="flex-1">
+                                    <Slider
+                                        value={width}
+                                        onChange={(value) => handleColumnWidthChange(columnName, value)}
+                                        min={80}
+                                        max={400}
+                                        step={10}
+                                    />
+                                </div>
+                                <div className="w-16 text-sm text-gray-500">
+                                    {width}px
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-6 text-right">
+                        <Button
+                            variant="solid"
+                            onClick={() => setColumnSettingsOpen(false)}
+                        >
+                            Fechar
+                        </Button>
+                    </div>
+                </div>
+            </Dialog>
+            
+            {/* Add Members Dialog */}
             <Dialog
                 isOpen={dialogOpen}
                 width={520}
@@ -87,18 +241,18 @@ const TasksHeader = () => {
             >
                 <div>
                     <div className="text-center mb-6">
-                        <h4 className="mb-1">Add people</h4>
-                        <p>Invite existing team member to this project.</p>
+                        <h4 className="mb-1">Adicionar Membros</h4>
+                        <p>Adicione membros ao fluxo de escrituras.</p>
                     </div>
                     <Input
                         ref={inputRef}
                         prefix={<TbSearch className="text-lg" />}
-                        placeholder="Quick search member"
+                        placeholder="Pesquisar membro"
                         onChange={onSearch}
                     />
                     <div className="mt-4">
                         <p className="font-semibold uppercase text-xs mb-4">
-                            {memberList.length} members available
+                            {memberList.length} membros disponíveis
                         </p>
                         <div className="mb-6">
                             <ScrollBar
@@ -131,7 +285,7 @@ const TasksHeader = () => {
                                                 }
                                             >
                                                 <span className="text-red-500">
-                                                    Remove
+                                                    Remover
                                                 </span>
                                             </Button>
                                         ) : (
@@ -141,7 +295,9 @@ const TasksHeader = () => {
                                                     onAddMember(member)
                                                 }
                                             >
-                                                Add
+                                                <span className="text-green-500">
+                                                    Adicionar
+                                                </span>
                                             </Button>
                                         )}
                                     </div>
@@ -149,7 +305,7 @@ const TasksHeader = () => {
                             </ScrollBar>
                         </div>
                         <Button block variant="solid" onClick={onDone}>
-                            Done
+                            Fechar
                         </Button>
                     </div>
                 </div>

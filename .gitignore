@@ -40,3 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .qodo
+
+# Gmail API credentials
+/credentials.json
+/token.json
+
+/src/generated/prisma

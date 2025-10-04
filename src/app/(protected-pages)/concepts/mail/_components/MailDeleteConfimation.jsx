@@ -11,18 +11,18 @@ const MailDeleteConfimation = ({
         <ConfirmDialog
             isOpen={isOpen}
             type="danger"
-            title="Delete mail"
+            title="Deletar Email"
             onClose={onClose}
             onRequestClose={onClose}
             onCancel={onClose}
             onConfirm={onConfirmDelete}
         >
             <p>
-                Are you sure you want to delete{' '}
+                Tem certeza que deseja deletar{' '}
                 {selectedMailCount > 1
-                    ? `${selectedMailCount} of these mails`
-                    : 'this mail'}{' '}
-                ? This action can&apos;t be undo.{' '}
+                    ? `${selectedMailCount} emails`
+                    : 'esse email'}{' '}
+                ? Esta ação não pode ser desfeita.{' '}
             </p>
         </ConfirmDialog>
     )

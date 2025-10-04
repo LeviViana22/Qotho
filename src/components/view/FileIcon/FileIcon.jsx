@@ -13,23 +13,41 @@ const FileIcon = ({ type, size = 40 }) => {
         case 'pdf':
             return <FilePdf height={size} width={size} />
         case 'xls':
+        case 'xlsx':
             return <FileXls height={size} width={size} />
         case 'doc':
+        case 'docx':
             return <FileDoc height={size} width={size} />
         case 'ppt':
+        case 'pptx':
             return <FilePpt height={size} width={size} />
         case 'figma':
             return <FileFigma height={size} width={size} />
         case 'jpg':
-            return <FileImage height={size} width={size} />
         case 'jpeg':
-            return <FileImage height={size} width={size} />
         case 'png':
+        case 'gif':
+        case 'bmp':
+        case 'svg':
             return <FileImage height={size} width={size} />
+        case 'txt':
+        case 'text':
+            return <FileDoc height={size} width={size} />
+        case 'mp3':
+        case 'wav':
+        case 'mp4':
+        case 'avi':
+        case 'mov':
+        case 'wmv':
+            return <FilePpt height={size} width={size} />
+        case 'zip':
+        case 'rar':
+        case '7z':
+            return <Folder height={size} width={size} />
         case 'directory':
             return <Folder height={size} width={size} />
         default:
-            return <></>
+            return <FileDoc height={size} width={size} />
     }
 }
 

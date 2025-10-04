@@ -1,9 +1,11 @@
 const appConfig = {
     apiPrefix: '/api',
-    authenticatedEntryPath: '/dashboards/ecommerce',
+    authenticatedEntryPath: '/dashboards/project',
     unAuthenticatedEntryPath: '/sign-in',
-    locale: 'en',
+    locale: 'pt',
     activeNavTranslation: true,
+    accessTokenPersistStrategy: 'cookies',
+    enableMock: false
 }
 
 export default appConfig

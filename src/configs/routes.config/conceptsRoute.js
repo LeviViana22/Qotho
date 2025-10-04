@@ -21,7 +21,7 @@ const conceptsRoute = {
         key: 'concepts.projects.kanban',
         authority: [ADMIN, USER],
         meta: {
-            pageContainerType: 'contained',
+            pageContainerType: 'default',
         },
     },
     '/concepts/projects/project-list': {
@@ -36,7 +36,7 @@ const conceptsRoute = {
         key: 'concepts.projects.projectTasks',
         authority: [ADMIN, USER],
         meta: {
-            pageContainerType: 'contained',
+            pageContainerType: 'default',
         },
     },
     '/concepts/projects/project-details/[slug]': {
@@ -187,10 +187,31 @@ const conceptsRoute = {
         authority: [ADMIN, USER],
         meta: {
             header: {
-                title: 'Settings',
+                title: 'Configurações',
             },
             pageContainerType: 'contained',
         },
+    },
+    '/concepts/account/add-user': {
+        key: 'concepts.account.addUser',
+        authority: [ADMIN],
+        meta: {
+            header: {
+                title: 'Novo usuário',
+            },
+            pageContainerType: 'contained',
+        },
+    },
+    '/concepts/account/user-edit/[id]': {
+        key: 'concepts.account.userEdit',
+        authority: [ADMIN],
+        meta: {
+            header: {
+                title: 'Editar usuário',
+            },
+            pageContainerType: 'contained',
+        },
+        dynamicRoute: true,
     },
     '/concepts/account/activity-log': {
         key: 'concepts.account.activityLog',
@@ -210,6 +231,17 @@ const conceptsRoute = {
         key: 'concepts.account.rolesPermissions',
         authority: [ADMIN, USER],
         meta: {
+            pageContainerType: 'contained',
+            pageBackgroundType: 'plain',
+        },
+    },
+    '/concepts/account/user-form': {
+        key: 'concepts.account.userForm',
+        authority: [ADMIN, USER],
+        meta: {
+            header: {
+                title: 'Novo usuário',
+            },
             pageContainerType: 'contained',
             pageBackgroundType: 'plain',
         },

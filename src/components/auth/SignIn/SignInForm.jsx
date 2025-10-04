@@ -30,8 +30,8 @@ const SignInForm = (props) => {
         control,
     } = useForm({
         defaultValues: {
-            email: 'admin-01@ecme.com',
-            password: '123Qwe',
+            email: 'admin@example.com',
+            password: 'admin123',
         },
         resolver: zodResolver(validationSchema),
     })
@@ -93,7 +93,7 @@ const SignInForm = (props) => {
                     variant="solid"
                     type="submit"
                 >
-                    {isSubmitting ? 'Signing in...' : 'Sign In'}
+                    {isSubmitting ? 'Entrando...' : 'Entrar'}
                 </Button>
             </Form>
         </div>

@@ -1,7 +1,7 @@
 const pageMeta = {
-    title: 'Ecme - The Ultimate Next & TypeScript Web Template',
+    title: 'Qotho',
     description:
-        'Admin Template and Starter Kit with React, Tailwind Components and Next.js',
+        'SaaS Admin',
     icons: {
         icon: '/favicon.ico',
     },

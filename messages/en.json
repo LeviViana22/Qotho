@@ -70,11 +70,13 @@
             "activityLog": "Activity log",
             "pricing": "Pricing",
             "rolesPermissions": "Roles & Permissions",
+            "users": "Users",
             "accountDesc": "Account settings and info",
             "settingsDesc": "Configure your settings",
             "activityLogDesc": "View recent activities",
             "rolesPermissionsDesc": "Manage roles & permissions",
-            "pricingDesc": "View pricing plans"
+            "pricingDesc": "View pricing plans",
+            "usersDesc": "Manage users and permissions"
         },
         "conceptsHelpCenter": {
             "helpCenter": "Help Center",

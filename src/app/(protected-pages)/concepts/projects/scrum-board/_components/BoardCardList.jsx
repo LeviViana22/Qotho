@@ -3,28 +3,38 @@ import BoardCard from './BoardCard'
 import { Draggable, Droppable } from '@hello-pangea/dnd'
 
 function InnerList(props) {
-    const { dropProvided, contents, ...rest } = props
+    const { dropProvided, contents, listId, ...rest } = props
 
     return (
         <div ref={dropProvided.innerRef} className="board-dropzone h-full">
             <div className="px-5 h-full">
-                {contents?.map((item, index) => (
-                    <Draggable
-                        key={item.id}
-                        draggableId={item.id}
-                        index={index}
-                    >
+                {contents?.map((item, index) => {
+                    // Ensure item has an id, if not, skip rendering
+                    if (!item || !item.id) {
+                        console.warn('BoardCardList: Item missing id property:', item);
+                        return null;
+                    }
+                    
+                    return (
+                        <Draggable
+                            key={item.id}
+                            draggableId={item.id}
+                            index={index}
+                            type="CARD"
+                        >
                         {(dragProvided) => (
                             <BoardCard
                                 ref={dragProvided.innerRef}
                                 data={item}
+                                listId={listId}
                                 {...rest}
                                 {...dragProvided.draggableProps}
                                 {...dragProvided.dragHandleProps}
                             />
                         )}
                     </Draggable>
-                ))}
+                    );
+                })}
             </div>
         </div>
     )
@@ -58,6 +68,7 @@ const BoardCardList = (props) => {
                     style={style}
                     className="board-wrapper overflow-hidden flex-auto"
                     {...dropProvided.droppableProps}
+                    suppressHydrationWarning
                 >
                     {internalScroll ? (
                         <div
@@ -67,12 +78,14 @@ const BoardCardList = (props) => {
                             <InnerList
                                 contents={contents}
                                 dropProvided={dropProvided}
+                                listId={listId}
                             />
                         </div>
                     ) : (
                         <InnerList
                             contents={contents}
                             dropProvided={dropProvided}
+                            listId={listId}
                         />
                     )}
                     {dropProvided.placeholder}

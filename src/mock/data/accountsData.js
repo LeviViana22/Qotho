@@ -192,9 +192,9 @@ export const intergrationSettingData = [
 export const roleGroupsData = [
     {
         id: 'admin',
-        name: 'Admin',
+        name: 'Administrador',
         description:
-            'Full access to all functionalities and settings. Can manage users, roles, and configurations.',
+            'Acesso total a todas as funcionalidades e configurações. Pode gerenciar usuários, funções e configurações.',
         users: [],
         accessRight: {
             users: ['write', 'read', 'delete'],
@@ -208,7 +208,7 @@ export const roleGroupsData = [
         id: 'supervisor',
         name: 'Supervisor',
         description:
-            'Oversees operations and users. Can view reports and has limited configuration access.',
+            'Supervisa operações e usuários. Pode visualizar relatórios e tem acesso limitado a configurações.',
         users: [],
         accessRight: {
             users: ['write', 'read'],
@@ -220,9 +220,9 @@ export const roleGroupsData = [
     },
     {
         id: 'support',
-        name: 'Support',
+        name: 'Suporte',
         description:
-            'Provides technical assistance. Can access user accounts and system reports for diagnostics.',
+            'Fornece assistência técnica. Pode acessar contas de usuários e relatórios do sistema para diagnósticos.',
         users: [],
         accessRight: {
             users: ['read'],
@@ -234,9 +234,9 @@ export const roleGroupsData = [
     },
     {
         id: 'user',
-        name: 'User',
+        name: 'Usuário',
         description:
-            'Access to basic features necessary for tasks. Limited administrative privileges.',
+            'Acesso a funcionalidades básicas necessárias para tarefas. Privilégios administrativos limitados.',
         users: [],
         accessRight: {
             users: [],
@@ -250,7 +250,7 @@ export const roleGroupsData = [
         id: 'auditor',
         name: 'Auditor',
         description:
-            'Reviews system activities. Can access reports, but cannot make changes.',
+            'Revisa atividades do sistema. Pode acessar relatórios, mas não pode fazer alterações.',
         users: [],
         accessRight: {
             users: ['read'],
@@ -262,9 +262,9 @@ export const roleGroupsData = [
     },
     {
         id: 'guest',
-        name: 'Guest',
+        name: 'Convidado',
         description:
-            'Temporary access to limited features. Ideal for visitors or temporary users.',
+            'Acesso temporário a funcionalidades limitadas. Ideal para visitantes ou usuários temporários.',
         users: [],
         accessRight: {
             users: [],

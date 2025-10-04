@@ -37,6 +37,7 @@ const ActivityAvatar = ({ data }) => {
         [],
     )
 
+
     if (data && avatarType.includes(data.type)) {
         const avatarProps = data.userImg
             ? { src: data.userImg }

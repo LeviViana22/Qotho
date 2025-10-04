@@ -1,6 +1,3 @@
-import NextAuth from 'next-auth'
-
-import authConfig from '@/configs/auth.config'
 import {
     authRoutes as _authRoutes,
     publicRoutes as _publicRoutes,
@@ -8,50 +5,32 @@ import {
 import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import appConfig from '@/configs/app.config'
 
-const { auth } = NextAuth(authConfig)
-
 const publicRoutes = Object.entries(_publicRoutes).map(([key]) => key)
 const authRoutes = Object.entries(_authRoutes).map(([key]) => key)
 
 const apiAuthPrefix = `${appConfig.apiPrefix}/auth`
 
-export default auth((req) => {
+export default function middleware(req) {
     const { nextUrl } = req
-    const isSignedIn = !!req.auth
 
-    const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix)
+    const isApiRoute = nextUrl.pathname.startsWith('/api')
     const isPublicRoute = publicRoutes.includes(nextUrl.pathname)
     const isAuthRoute = authRoutes.includes(nextUrl.pathname)
 
-    /** Skip auth middleware for api routes */
-    if (isApiAuthRoute) return
+    /** Skip auth middleware for all api routes */
+    if (isApiRoute) return
 
-    if (isAuthRoute) {
-        if (isSignedIn) {
-            /** Redirect to authenticated entry path if signed in & path is auth route */
-            return Response.redirect(
-                new URL(appConfig.authenticatedEntryPath, nextUrl),
-            )
-        }
-        return
-    }
+    /** Skip auth middleware for public routes */
+    if (isPublicRoute) return
 
-    /** Redirect to authenticated entry path if signed in & path is public route */
-    if (!isSignedIn && !isPublicRoute) {
-        let callbackUrl = nextUrl.pathname
-        if (nextUrl.search) {
-            callbackUrl += nextUrl.search
-        }
+    /** Skip auth middleware for auth routes */
+    if (isAuthRoute) return
 
-        return Response.redirect(
-            new URL(
-                `${appConfig.unAuthenticatedEntryPath}?${REDIRECT_URL_KEY}=${callbackUrl}`,
-                nextUrl,
-            ),
-        )
-    }
-})
+    /** For all other routes, let NextAuth handle authentication */
+    return
+}
 
 export const config = {
     matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api)(.*)'],
+    runtime: 'nodejs', // Force middleware to run in Node.js runtime instead of Edge Runtime
 }

@@ -89,7 +89,7 @@ const conceptsNavigationConfig = [
                     {
                         key: 'concepts.projects.kanban',
                         path: `${CONCEPTS_PREFIX_PATH}/projects/scrum-board`,
-                        title: 'Kanban',
+                        title: 'Escrituras',
                         translateKey: 'nav.conceptsProjects.kanban',
                         icon: 'projectScrumBoard',
                         type: NAV_ITEM_TYPE_ITEM,
@@ -104,69 +104,18 @@ const conceptsNavigationConfig = [
                         subMenu: [],
                     },
                     {
-                        key: 'concepts.projects.projectList',
-                        path: `${CONCEPTS_PREFIX_PATH}/projects/project-list`,
-                        title: 'Project List',
-                        translateKey: 'nav.conceptsProjects.projectList',
-                        icon: 'projectList',
+                        key: 'concepts.projects.registro-civil',
+                        path: `${CONCEPTS_PREFIX_PATH}/projects/registro-civil`,
+                        title: 'Registro Civil',
+                        translateKey: 'nav.conceptsProjects.registroCivil',
+                        icon: 'projectScrumBoard',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [ADMIN, USER],
                         meta: {
                             description: {
                                 translateKey:
-                                    'nav.conceptsProjects.projectListDesc',
-                                label: 'Organize all projects',
-                            },
-                        },
-                        subMenu: [],
-                    },
-                    {
-                        key: 'concepts.projects.projectDetails',
-                        path: `${CONCEPTS_PREFIX_PATH}/projects/project-details/27`,
-                        title: 'Details',
-                        translateKey: 'nav.conceptsProjects.projectDetails',
-                        icon: 'projectDetails',
-                        type: NAV_ITEM_TYPE_ITEM,
-                        authority: [ADMIN, USER],
-                        meta: {
-                            description: {
-                                translateKey:
-                                    'nav.conceptsProjects.projectDetailsDesc',
-                                label: 'Project detailed information',
-                            },
-                        },
-                        subMenu: [],
-                    },
-                    {
-                        key: 'concepts.projects.projectTasks',
-                        path: `${CONCEPTS_PREFIX_PATH}/projects/tasks`,
-                        title: 'Tasks',
-                        translateKey: 'nav.conceptsProjects.projectTasks',
-                        icon: 'projectTask',
-                        type: NAV_ITEM_TYPE_ITEM,
-                        authority: [ADMIN, USER],
-                        meta: {
-                            description: {
-                                translateKey:
-                                    'nav.conceptsProjects.projectTasksDesc',
-                                label: 'Manage project tasks',
-                            },
-                        },
-                        subMenu: [],
-                    },
-                    {
-                        key: 'concepts.projects.projectIssue',
-                        path: `${CONCEPTS_PREFIX_PATH}/projects/tasks/1`,
-                        title: 'Issue',
-                        translateKey: 'nav.conceptsProjects.projectIssue',
-                        icon: 'projectIssue',
-                        type: NAV_ITEM_TYPE_ITEM,
-                        authority: [ADMIN, USER],
-                        meta: {
-                            description: {
-                                translateKey:
-                                    'nav.conceptsProjects.projectIssueDesc',
-                                label: 'Resolve project issues',
+                                    'nav.conceptsProjects.registroCivilDesc',
+                                label: 'Manage civil registry workflow',
                             },
                         },
                         subMenu: [],
@@ -208,57 +157,57 @@ const conceptsNavigationConfig = [
                         },
                         subMenu: [],
                     },
-                    {
-                        key: 'concepts.account.activityLog',
-                        path: `${CONCEPTS_PREFIX_PATH}/account/activity-log`,
-                        title: 'Activity log',
-                        translateKey: 'nav.conceptsAccount.activityLog',
-                        icon: 'accountActivityLogs',
-                        type: NAV_ITEM_TYPE_ITEM,
-                        authority: [ADMIN, USER],
-                        meta: {
-                            description: {
-                                translateKey:
-                                    'nav.conceptsAccount.activityLogDesc',
-                                label: 'View recent activities',
-                            },
-                        },
-                        subMenu: [],
-                    },
+                    // {
+                    //     key: 'concepts.account.activityLog',
+                    //     path: `${CONCEPTS_PREFIX_PATH}/account/activity-log`,
+                    //     title: 'Activity log',
+                    //     translateKey: 'nav.conceptsAccount.activityLog',
+                    //     icon: 'accountActivityLogs',
+                    //     type: NAV_ITEM_TYPE_ITEM,
+                    //     authority: [ADMIN, USER],
+                    //     meta: {
+                    //         description: {
+                    //             translateKey:
+                    //                 'nav.conceptsAccount.activityLogDesc',
+                    //             label: 'View recent activities',
+                    //         },
+                    //     },
+                    //     subMenu: [],
+                    // },
                     {
                         key: 'concepts.account.rolesPermissions',
                         path: `${CONCEPTS_PREFIX_PATH}/account/roles-permissions`,
-                        title: 'Roles & Permissions',
-                        translateKey: 'nav.conceptsAccount.rolesPermissions',
+                        title: 'Users',
+                        translateKey: 'nav.conceptsAccount.users',
                         icon: 'accountRoleAndPermission',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [ADMIN, USER],
                         meta: {
                             description: {
                                 translateKey:
-                                    'nav.conceptsAccount.rolesPermissionsDesc',
-                                label: 'Manage roles & permissions',
+                                    'nav.conceptsAccount.usersDesc',
+                                label: 'Manage users and permissions',
                             },
                         },
                         subMenu: [],
                     },
-                    {
-                        key: 'concepts.account.pricing',
-                        path: `${CONCEPTS_PREFIX_PATH}/account/pricing`,
-                        title: 'Pricing',
-                        translateKey: 'nav.conceptsAccount.pricing',
-                        icon: 'accountPricing',
-                        type: NAV_ITEM_TYPE_ITEM,
-                        authority: [ADMIN, USER],
-                        meta: {
-                            description: {
-                                translateKey:
-                                    'nav.conceptsAccount.pricingDesc',
-                                label: 'View pricing plans',
-                            },
-                        },
-                        subMenu: [],
-                    },
+                    // {
+                    //     key: 'concepts.account.pricing',
+                    //     path: `${CONCEPTS_PREFIX_PATH}/account/pricing`,
+                    //     title: 'Pricing',
+                    //     translateKey: 'nav.conceptsAccount.pricing',
+                    //     icon: 'accountPricing',
+                    //     type: NAV_ITEM_TYPE_ITEM,
+                    //     authority: [ADMIN, USER],
+                    //     meta: {
+                    //         description: {
+                    //             translateKey:
+                    //                 'nav.conceptsAccount.pricingDesc',
+                    //             label: 'View pricing plans',
+                    //         },
+                    //     },
+                    //     subMenu: [],
+                    // },
                 ],
             },
             {

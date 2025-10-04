@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Avatar from '@/components/ui/Avatar'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
@@ -11,25 +11,28 @@ import isLastChild from '@/utils/isLastChild'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
+import useUserStore from '@/stores/userStore'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
 
 const authenticatorList = [
     {
         label: 'Google Authenticator',
         value: 'googleAuthenticator',
         img: '/img/others/google.png',
-        desc: 'Using Google Authenticator app generates time-sensitive codes for secure logins.',
+        desc: 'Usando o aplicativo Google Authenticator, geramos códigos de acesso temporários para logins seguros.',
     },
     {
         label: 'Okta Verify',
         value: 'oktaVerify',
         img: '/img/others/okta.png',
-        desc: 'Receive push notifications from Okta Verify app on your phone for quick login approval.',
+        desc: 'Receba notificações push do aplicativo Okta Verify no seu telefone para aprovação rápida de logins.',
     },
     {
-        label: 'E Mail verification',
+        label: 'Verificação por email',
         value: 'emailVerification',
         img: '/img/others/email.png',
-        desc: 'Unique codes sent to email for confirming logins.',
+        desc: 'Códigos únicos enviados para o email para confirmar logins.',
     },
 ]
 
@@ -37,20 +40,28 @@ const validationSchema = z
     .object({
         currentPassword: z
             .string()
-            .min(1, { message: 'Please enter your current password!' }),
+            .min(1, { message: 'Por favor, digite sua senha atual!' }),
         newPassword: z
             .string()
-            .min(1, { message: 'Please enter your new password!' }),
+            .min(8, { message: 'A nova senha deve ter pelo menos 8 caracteres!' })
+            .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, { 
+                message: 'A senha deve conter pelo menos uma letra minúscula, uma maiúscula e um número!' 
+            }),
         confirmNewPassword: z
             .string()
-            .min(1, { message: 'Please confirm your new password!' }),
+            .min(1, { message: 'Por favor, confirme sua nova senha!' }),
     })
     .refine((data) => data.confirmNewPassword === data.newPassword, {
-        message: 'Password not match',
+        message: 'Senha não confere',
         path: ['confirmNewPassword'],
+    })
+    .refine((data) => data.currentPassword !== data.newPassword, {
+        message: 'A nova senha deve ser diferente da senha atual',
+        path: ['newPassword'],
     })
 
 const SettingsSecurity = () => {
+    const { currentUser } = useUserStore()
     const [selected2FaType, setSelected2FaType] = useState(
         'googleAuthenticator',
     )
@@ -62,31 +73,97 @@ const SettingsSecurity = () => {
     const {
         getValues,
         handleSubmit,
+        reset,
         formState: { errors },
         control,
     } = useForm({
         resolver: zodResolver(validationSchema),
     })
 
+    useEffect(() => {
+        console.log('SettingsSecurity component mounted')
+        console.log('Current user:', currentUser)
+        console.log('Current user ID:', currentUser?.id)
+        console.log('Current user name:', currentUser?.name)
+        console.log('Current user email:', currentUser?.email)
+    }, [currentUser])
+
     const handlePostSubmit = async () => {
+        console.log('handlePostSubmit called')
+        if (!currentUser) {
+            console.log('No current user found')
+            toast.push(
+                <Notification type="danger">Usuário não encontrado. Faça login novamente.</Notification>,
+                { placement: 'top-center' }
+            )
+            setConfirmationOpen(false)
+            return
+        }
+
+        console.log('Current user found:', currentUser.id)
         setIsSubmitting(true)
-        await sleep(1000)
-        console.log('getValues', getValues())
-        setConfirmationOpen(false)
-        setIsSubmitting(false)
+        
+        try {
+            const { currentPassword, newPassword } = getValues()
+            
+            // Call API to update password
+            const response = await fetch(`/api/users/${currentUser.id}/password`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword,
+                }),
+            })
+
+            const data = await response.json()
+
+            if (response.ok && data.success) {
+                console.log('Password update successful, showing success toast')
+                toast.push(
+                    <Notification type="success">Senha atualizada com sucesso!</Notification>,
+                    { placement: 'top-center' }
+                )
+                console.log('Success toast pushed')
+                // Reset form
+                reset()
+            } else {
+                // Show specific error message from API
+                const errorMessage = data.error || 'Erro ao atualizar senha'
+                console.error('Password update error:', data)
+                throw new Error(errorMessage)
+            }
+        } catch (error) {
+            console.error('Error updating password:', error)
+            console.log('About to show error toast:', error.message)
+            toast.push(
+                <Notification type="danger">
+                    {error.message || 'Erro ao atualizar senha. Tente novamente.'}
+                </Notification>,
+                { placement: 'top-center' }
+            )
+            console.log('Error toast pushed')
+        } finally {
+            setIsSubmitting(false)
+            setConfirmationOpen(false)
+        }
     }
 
-    const onSubmit = async () => {
+    const onSubmit = async (data) => {
+        console.log('Form submitted with data:', data)
+        console.log('Form validation passed, opening confirmation dialog')
         setConfirmationOpen(true)
     }
 
     return (
         <div>
             <div className="mb-8">
-                <h4>Password</h4>
+                <h4>Senha</h4>
                 <p>
-                    Remember, your password is your digital key to your account.
-                    Keep it safe, keep it secure!
+                    Lembre-se, sua senha é a chave digital da sua conta.
+                    Mantenha-a segura!
                 </p>
             </div>
             <Form
@@ -95,7 +172,7 @@ const SettingsSecurity = () => {
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <FormItem
-                    label="Current password"
+                    label="Senha atual"
                     invalid={Boolean(errors.currentPassword)}
                     errorMessage={errors.currentPassword?.message}
                 >
@@ -113,7 +190,7 @@ const SettingsSecurity = () => {
                     />
                 </FormItem>
                 <FormItem
-                    label="New password"
+                    label="Nova senha"
                     invalid={Boolean(errors.newPassword)}
                     errorMessage={errors.newPassword?.message}
                 >
@@ -129,9 +206,12 @@ const SettingsSecurity = () => {
                             />
                         )}
                     />
+                    <div className="text-xs text-gray-500 mt-1">
+                        A senha deve ter pelo menos 8 caracteres, incluindo uma letra minúscula, uma maiúscula e um número.
+                    </div>
                 </FormItem>
                 <FormItem
-                    label="Confirm new password"
+                    label="Confirmar nova senha"
                     invalid={Boolean(errors.confirmNewPassword)}
                     errorMessage={errors.confirmNewPassword?.message}
                 >
@@ -150,7 +230,7 @@ const SettingsSecurity = () => {
                 </FormItem>
                 <div className="flex justify-end">
                     <Button variant="solid" type="submit">
-                        Update
+                        Atualizar
                     </Button>
                 </div>
             </Form>
@@ -166,13 +246,13 @@ const SettingsSecurity = () => {
                 onRequestClose={() => setConfirmationOpen(false)}
                 onCancel={() => setConfirmationOpen(false)}
             >
-                <p>Are you sure you want to change your password?</p>
+                <p>Tem certeza que deseja alterar sua senha?</p>
             </ConfirmDialog>
             <div className="mb-8">
-                <h4>2-Step verification</h4>
+                <h4>Verificação em duas etapas</h4>
                 <p>
-                    Your account holds great value to hackers. Enable two-step
-                    verification to safeguard your account!
+                    Sua conta tem grande valor para hackers. Ative a verificação
+                    em duas etapas para proteger sua conta!
                 </p>
                 <div className="mt-8">
                     {authenticatorList.map((authOption, index) => (
@@ -207,7 +287,7 @@ const SettingsSecurity = () => {
                                                 setSelected2FaType('')
                                             }
                                         >
-                                            Activated
+                                            Ativado
                                         </Button>
                                     ) : (
                                         <Button
@@ -218,7 +298,7 @@ const SettingsSecurity = () => {
                                                 )
                                             }
                                         >
-                                            Enable
+                                            Ativar
                                         </Button>
                                     )}
                                 </div>

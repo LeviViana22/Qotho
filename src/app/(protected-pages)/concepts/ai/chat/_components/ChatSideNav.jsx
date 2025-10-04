@@ -36,7 +36,7 @@ const ChatSideNav = ({ className, bodyClass, onClick }) => {
                         <TbSearch className="text-xl" />
                         <input
                             className="flex-1 h-full placeholder:text-gray-400 placeholder:text-base bg-transparent focus:outline-hidden heading-text"
-                            placeholder="Search chat"
+                            placeholder="Procure chats"
                             onChange={handleInputChange}
                         />
                     </div>
@@ -52,7 +52,7 @@ const ChatSideNav = ({ className, bodyClass, onClick }) => {
             <ChatHistory queryText={queryText} onClick={onClick} />
             <div className="px-5 py-2">
                 <Button block variant="solid" onClick={handleNewChat}>
-                    New chat
+                    Novo chat
                 </Button>
             </div>
         </Card>

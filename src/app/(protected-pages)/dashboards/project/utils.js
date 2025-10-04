@@ -16,12 +16,6 @@ const getEvents = (date, eventsSet) => {
                 time: dayjs(date).set('hour', 17).set('minute', 0).toDate(),
             },
             {
-                id: '3f3ee64a-f639-44b8-9a64-1ff586b467e1',
-                type: 'event',
-                label: 'Townhall',
-                time: dayjs(date).set('hour', 15).set('minute', 0).toDate(),
-            },
-            {
                 id: 'c6cb8f7a-b726-4749-a3ae-7125202786b5',
                 type: 'breaks',
                 label: 'Lunch break',

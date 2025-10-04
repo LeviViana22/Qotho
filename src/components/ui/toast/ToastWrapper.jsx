@@ -28,8 +28,16 @@ const useMessages = (msgKey) => {
 
     const push = useCallback(
         (message) => {
-            const key = msgKey || '_' + Math.random().toString(36).substr(2, 12)
+            console.log('ToastWrapper.push called with:', message)
+            // Counter for deterministic ID generation
+            if (!window.toastCounter) {
+                window.toastCounter = 0
+            }
+            window.toastCounter++
+            const key = msgKey || `_toast_${window.toastCounter}`
+            console.log('ToastWrapper.push creating message with key:', key)
             setMessages([...messages, { key, visible: true, node: message }])
+            console.log('ToastWrapper.push messages updated:', [...messages, { key, visible: true, node: message }])
             return key
         },
         [messages, msgKey],

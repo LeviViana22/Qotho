@@ -75,7 +75,7 @@ const ActivityLog = () => {
         <AdaptiveCard className="h-full" bodyClass="h-full">
             <div className="max-w-[800px] mx-auto h-full">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <h3>Acitvity log</h3>
+                    <h3>Logs de atividades</h3>
                     <LogAction
                         selectedType={selectedType}
                         showMentionedOnly={showMentionedOnly}

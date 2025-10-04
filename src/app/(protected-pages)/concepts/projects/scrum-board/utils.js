@@ -1,21 +1,42 @@
+// Generate unique ID using timestamp and random component
 export const createUID = (len) => {
-    const buf = [],
-        chars =
-            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-        charlen = chars.length,
-        length = len || 32
+    // Use timestamp + random number for uniqueness
+    const timestamp = Date.now().toString(36)
+    const random = Math.random().toString(36).substring(2, 8)
+    return `scrum_${timestamp}_${random}`
+}
 
-    for (let i = 0; i < length; i++) {
-        buf[i] = chars.charAt(Math.floor(Math.random() * charlen))
+export const generateProjectId = (columns) => {
+    // Get all existing project IDs
+    const existingIds = []
+    
+    // Extract all project IDs from all boards
+    Object.values(columns).forEach(board => {
+        board.forEach(project => {
+            if (project.projectId && project.projectId.startsWith('PJ-')) {
+                const number = parseInt(project.projectId.replace('PJ-', ''))
+                if (!isNaN(number)) {
+                    existingIds.push(number)
+                }
+            }
+        })
+    })
+    
+    // Find the next available number
+    let nextNumber = 1
+    while (existingIds.includes(nextNumber)) {
+        nextNumber++
     }
-    return buf.join('')
+    
+    return `PJ-${nextNumber}`
 }
 
 export const createCardObject = () => {
     return {
         id: createUID(10),
+        projectId: '', // Will be set when creating the project
         name: 'Untitled Task',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        description: 'Observações',
         cover: '',
         members: [],
         labels: ['Task'],
@@ -24,17 +45,9 @@ export const createCardObject = () => {
         dueDate: null,
         assignedTo: '',
         label: '',
-        entryDate: null,
-        empreendimento: '',
-        unidade: '',
-        matricula: '',
-        ordem: '',
-        tipo: '',
-        natureza: '',
-        custas: '',
-        vencimentoMatricula: '',
-        envioEscritura: null,
-        minutaAprovada: false,
+        createdAt: new Date().toISOString(), // Add creation timestamp
+        // Note: Dynamic fields will be added based on field configuration
+        // Hardcoded fields removed to work with dynamic field system
     }
 }
 

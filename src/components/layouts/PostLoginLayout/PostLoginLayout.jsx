@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react'
 import {
     LAYOUT_COLLAPSIBLE_SIDE,
     LAYOUT_STACKED_SIDE,
@@ -43,6 +44,40 @@ const PostLoginLayout = ({ children }) => {
     const pathname = usePathname()
 
     const route = queryRoute(pathname)
+
+    // Global event listener for scrumboardDataChanged events
+    useEffect(() => {
+        console.log('PostLoginLayout: Setting up global event listener for scrumboardDataChanged');
+        
+        const handleScrumboardDataChange = () => {
+            console.log('PostLoginLayout: scrumboardDataChanged event received');
+            try {
+                const storedData = localStorage.getItem('scrumboardData');
+                if (storedData) {
+                    const newData = JSON.parse(storedData);
+                    console.log('PostLoginLayout: Retrieved data from localStorage:', newData);
+                    
+                    // Dispatch ticketDataChanged event for TicketContent components
+                    window.dispatchEvent(new CustomEvent('ticketDataChanged', { 
+                        detail: { newData } 
+                    }));
+                    console.log('PostLoginLayout: ticketDataChanged event dispatched');
+                } else {
+                    console.log('PostLoginLayout: No stored data found in localStorage');
+                }
+            } catch (error) {
+                console.error('Error handling scrumboardDataChanged event:', error);
+            }
+        };
+
+        window.addEventListener('scrumboardDataChanged', handleScrumboardDataChange);
+        console.log('PostLoginLayout: Event listener added for scrumboardDataChanged');
+        
+        return () => {
+            window.removeEventListener('scrumboardDataChanged', handleScrumboardDataChange);
+            console.log('PostLoginLayout: Event listener removed for scrumboardDataChanged');
+        };
+    }, []);
 
     return (
         <Layout

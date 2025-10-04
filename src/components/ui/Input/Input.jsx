@@ -79,18 +79,18 @@ const Input = (props) => {
             return
         }
 
-        if (prefixNodeWidth) {
+        if (prefixNodeWidth && prefixNodeWidth !== prefixGutter) {
             setPrefixGutter(prefixNodeWidth)
         }
 
-        if (suffixNodeWidth) {
+        if (suffixNodeWidth && suffixNodeWidth !== suffixGutter) {
             setSuffixGutter(suffixNodeWidth)
         }
     }
 
     useEffect(() => {
         getAffixSize()
-    }, [prefix, suffix])
+    }, [prefix, suffix, prefixGutter, suffixGutter])
 
     const remToPxConvertion = (pixel) => 0.0625 * pixel
 

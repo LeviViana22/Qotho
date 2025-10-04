@@ -1,14 +1,14 @@
 import DropdownMenu from './DropdownMenu'
-import { FloatingTree, useFloatingParentNodeId } from '@floating-ui/react'
+import { CustomFloatingTree, useFloatingParentNodeId } from './CustomFloatingTree'
 
 const DropdownSub = ({ ref, ...props }) => {
     const parentId = useFloatingParentNodeId()
 
     if (parentId === null) {
         return (
-            <FloatingTree>
+            <CustomFloatingTree>
                 <DropdownMenu {...props} ref={ref} />
-            </FloatingTree>
+            </CustomFloatingTree>
         )
     }
 

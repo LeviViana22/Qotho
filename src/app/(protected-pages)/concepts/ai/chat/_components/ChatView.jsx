@@ -47,7 +47,7 @@ const ChatView = () => {
             <ChatBox
                 ref={scrollRef}
                 messageList={messageList}
-                placeholder="Enter a prompt here"
+                placeholder="Pergunte algo"
                 showMessageList={Boolean(selectedConversation)}
                 showAvatar={true}
                 avatarGap={true}

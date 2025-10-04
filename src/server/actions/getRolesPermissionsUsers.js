@@ -1,4 +1,4 @@
-import { userDetailData } from '@/mock/data/usersData'
+import { getAllUsers } from './userActions'
 import wildCardSearch from '@/utils/wildCardSearch'
 import sortBy from '@/utils/sortBy'
 import paginate from '@/utils/paginate'
@@ -14,7 +14,7 @@ const getRolesPermissionsUsers = async (_queryParams) => {
         query,
     } = queryParams
 
-    const users = userDetailData
+    const users = await getAllUsers()
 
     let data = structuredClone(users)
     let total = users.length

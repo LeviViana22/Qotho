@@ -1,0 +1,33 @@
+[
+  {
+    "id": "1",
+    "name": "Admin User",
+    "firstName": "Admin",
+    "lastName": "User",
+    "email": "admin@company.com",
+    "img": "/img/avatars/thumb-1.jpg",
+    "role": "admin",
+    "lastOnline": 1739132800,
+    "status": "active",
+    "title": "System Administrator",
+    "personalInfo": {
+      "location": "São Paulo, BR",
+      "address": "Rua das Flores, 123",
+      "postcode": "01234-567",
+      "city": "São Paulo",
+      "country": "BR",
+      "dialCode": "+55",
+      "birthday": "15/03/1985",
+      "phoneNumber": "+55-11-99999-9999",
+      "facebook": "",
+      "twitter": "",
+      "pinterest": "",
+      "linkedIn": ""
+    },
+    "orderHistory": [],
+    "paymentMethod": [],
+    "subscription": [],
+    "totalSpending": 0
+  }
+]
+

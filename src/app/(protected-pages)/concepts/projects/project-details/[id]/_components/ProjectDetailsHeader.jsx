@@ -13,6 +13,8 @@ import { apiGetProjectMembers } from '@/services/ProjectService'
 import { components } from 'react-select'
 import { TbChecks } from 'react-icons/tb'
 import useSWRMutation from 'swr/mutation'
+import useUserStore from '@/stores/userStore'
+import { useUserStoreHydrated } from '@/hooks/useUserStoreHydrated'
 
 const { MultiValueLabel } = components
 
@@ -67,6 +69,10 @@ const ProjectDetailsHeader = (props) => {
     const drawerRef = useRef(null)
 
     const { smaller } = useResponsive()
+    
+    // Get real users from the user store
+    const { users } = useUserStore()
+    const isHydrated = useUserStoreHydrated()
 
     const { trigger } = useSWRMutation(
         ['/api/projects/members'],
@@ -83,12 +89,34 @@ const ProjectDetailsHeader = (props) => {
         },
     )
 
+    // Update member options with real users when available
+    useEffect(() => {
+        if (isHydrated && users && users.length > 0) {
+            const realUserOptions = users.map((user) => ({
+                value: user.id,
+                label: user.name,
+                img: user.img,
+            }))
+            setMemberOptions(realUserOptions)
+        }
+    }, [isHydrated, users])
+
     const handleFocus = async () => {
         if (memberOptions.length === 0) {
             setLoading(true)
             await trigger()
             setLoading(false)
         }
+    }
+
+    const handleMemberChange = async (selectedMembers) => {
+        // This function would be called when members are selected in the share dialog
+        // For now, we'll just log it - you can implement the actual update logic here
+        console.log('Members selected:', selectedMembers);
+        
+        // TODO: Update the project's members in scrum board data
+        // This would involve finding the project in localStorage and updating its members
+        // Then dispatching the scrumboardDataChanged event
     }
 
     useEffect(() => {
@@ -174,6 +202,7 @@ const ProjectDetailsHeader = (props) => {
                             options={memberOptions}
                             isLoading={loading}
                             onFocus={handleFocus}
+                            onChange={handleMemberChange}
                         />
                     </FormItem>
                 </Form>

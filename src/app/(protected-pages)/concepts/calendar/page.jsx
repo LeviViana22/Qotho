@@ -1,12 +1,9 @@
 import CalendarProvider from './_components/CalendarProvider'
 import Calendar from './_components/Calendar'
-import getCalendar from '@/server/actions/getCalendar'
 
-export default async function Page() {
-    const data = await getCalendar()
-
+export default function Page() {
     return (
-        <CalendarProvider events={data}>
+        <CalendarProvider>
             <Calendar />
         </CalendarProvider>
     )

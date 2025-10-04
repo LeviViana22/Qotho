@@ -36,8 +36,8 @@ const LogAction = ({
             <div className="flex items-center gap-2">
                 <span className="font-semibold">
                     {showMentionedOnly
-                        ? 'Show all activity'
-                        : 'Show mentioned only'}
+                        ? 'Mostrar todas as atividades'
+                        : 'Mostrar apenas menções'}
                 </span>
                 <Switcher
                     checked={showMentionedOnly}

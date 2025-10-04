@@ -1,7 +1,6 @@
-import { scrumboardData } from '@/mock/data/projectsData'
-
 const getScrumboardData = async () => {
-    return scrumboardData
+    // Return empty structure for dynamic boards - no hardcoded fallbacks
+    return {}
 }
 
 export default getScrumboardData

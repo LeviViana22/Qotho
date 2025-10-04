@@ -2,13 +2,12 @@
 import { useEffect } from 'react'
 import { useCalendar } from '../_store/calendarStore'
 
-const CalendarProvider = ({ children, events }) => {
-    const setData = useCalendar((state) => state.setData)
-    const setInitialLoading = useCalendar((state) => state.setInitialLoading)
+const CalendarProvider = ({ children }) => {
+    const loadEvents = useCalendar((state) => state.loadEvents)
+    const initialLoading = useCalendar((state) => state.initialLoading)
 
     useEffect(() => {
-        setData(events)
-        setInitialLoading(false)
+        loadEvents()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

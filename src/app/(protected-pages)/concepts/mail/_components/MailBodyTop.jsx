@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Button from '@/components/ui/Button'
 import Dropdown from '@/components/ui/Dropdown'
 import Badge from '@/components/ui/Badge'
@@ -8,11 +8,12 @@ import MailDeleteConfimation from './MailDeleteConfimation'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { useMailStore } from '../_store/mailStore'
 import useMailAction from '../_hooks/useMailAction'
-import { labelList } from '../constants'
+import { groupList } from '../constants'
 import { TbMail, TbTrash, TbMenu2 } from 'react-icons/tb'
 
 const MailBodyTop = () => {
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
+    const [isClient, setIsClient] = useState(false)
 
     const { selectedMailId, toggleMessageDialog, toggleMobileSidebar } =
         useMailStore()
@@ -22,6 +23,10 @@ const MailBodyTop = () => {
     const { smaller } = useResponsive()
 
     const hasMailSelected = selectedMailId.length > 0
+
+    useEffect(() => {
+        setIsClient(true)
+    }, [])
 
     const handleClose = () => {
         setDeleteConfirmationOpen(false)
@@ -40,7 +45,7 @@ const MailBodyTop = () => {
         <>
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                    {smaller.xl && (
+                    {isClient && smaller.xl && (
                         <button
                             className="close-button"
                             type="button"
@@ -57,17 +62,16 @@ const MailBodyTop = () => {
                     {hasMailSelected ? (
                         <>
                             <Dropdown
-                                renderTitle={<Button size="sm">Move to</Button>}
+                                renderTitle={<Button size="sm">Mover para</Button>}
                                 placement="bottom-end"
                             >
-                                {labelList.map((item) => (
+                                {groupList.filter(item => item.value !== 'deleted').map((item) => (
                                     <Dropdown.Item
                                         key={item.value}
                                         onClick={() =>
                                             handleMoveMailClick(item.value)
                                         }
                                     >
-                                        <Badge className={item.dotClass} />
                                         <span>{item.label}</span>
                                     </Dropdown.Item>
                                 ))}
@@ -81,7 +85,7 @@ const MailBodyTop = () => {
                                 icon={<TbTrash />}
                                 onClick={() => setDeleteConfirmationOpen(true)}
                             >
-                                Delete
+                                Deletar
                             </Button>
                         </>
                     ) : (
@@ -96,7 +100,7 @@ const MailBodyTop = () => {
                                 })
                             }
                         >
-                            New email
+                            Criar
                         </Button>
                     )}
                 </div>

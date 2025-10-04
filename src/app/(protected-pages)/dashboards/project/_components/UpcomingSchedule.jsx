@@ -94,6 +94,11 @@ const UpcomingSchedule = () => {
                         onChange={(val) => {
                             setSelectedDate(val)
                         }}
+                        locale="en"
+                        labelFormat={{
+                            month: 'MMM',
+                            year: 'YYYY',
+                        }}
                     />
                 </div>
                 <div className="w-full">
@@ -106,7 +111,7 @@ const UpcomingSchedule = () => {
                         </h5>
                     </div>
                     <div className="w-full">
-                        <ScrollBar className="overflow-y-auto h-[280px] xl:max-w-[280px]">
+                        <ScrollBar className="overflow-y-auto h-[211px] xl:max-w-[280px]">
                             <div className="flex flex-col gap-4">
                                 {eventList.map((event) => (
                                     <ScheduledEvent key={event.id} {...event} />

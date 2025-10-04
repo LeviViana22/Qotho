@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// NextAuth.js required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// User model
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // For credentials authentication
+  role          String    @default("user")
+  status        String    @default("active")
+  title         String?
+  firstName     String?
+  lastName      String?
+  personalInfo  Json?
+  lastOnline    Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  scrumBoardMembers ScrumBoardMember[]
+
+  @@map("users")
+}
+
+// Scrum Board Data model for storing board members and other scrum board data
+model ScrumBoardData {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("scrum_board_data")
+}
+
+// Board Colors model for storing board colors
+model BoardColor {
+  id          String   @id @default(cuid())
+  boardName   String   @unique
+  color       String   @default("gray")
+  projectType String?  // Project type (e.g., "scrum-board", "registro-civil")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("board_colors")
+}
+
+// Calendar Events model
+model CalendarEvent {
+  id          String    @id @default(cuid())
+  title       String
+  start       DateTime
+  end         DateTime?
+  eventTime   String?   // Store the time as HH:mm format for display
+  eventColor  String    @default("blue")
+  groupId     String?   // For recurring events
+  description String?
+  allDay      Boolean   @default(false)
+  userId      String?   // Optional: link to user who created the event
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("calendar_events")
+}
+
+// Field Configuration model for dynamic form fields
+model FieldConfig {
+  id         String   @id @default(cuid())
+  nome       String   // Display name
+  tipo       String   // Field type (text, date, dropdown, etc.)
+  obrigatorio Boolean @default(false)
+  pesquisavel Boolean @default(false)
+  ativo      Boolean  @default(true)
+  visivelNoQuadro Boolean @default(false) // Show in board card
+  fieldName  String   // Internal field name
+  options    String?  // JSON string for dropdown/select options
+  order      Int      @default(0) // Display order
+  projectType String? // Project type (e.g., "scrum-board", "registro-civil")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("field_configs")
+}
+
+// Scrum Board Member model for storing board members
+model ScrumBoardMember {
+  id          String   @id @default(cuid())
+  userId      String
+  role        String   @default("member")
+  projectType String?  // Project type (e.g., "scrum-board", "registro-civil")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectType])
+  @@map("scrum_board_members")
+}
+
+// Project model for all project types
+model Project {
+  id          String   @id @default(cuid())
+  projectId   String?  // Optional project ID for compatibility
+  name        String
+  description String?
+  status      String   // Board name (e.g., "Triagem de Documentos")
+  boardOrder  Int      @default(0) // Order of the board (0 = first, 1 = second, etc.)
+  members     String   // JSON string of member IDs
+  labels      String?  // JSON string of labels
+  attachments String?  // JSON string of attachments
+  comments    String?  // JSON string of comments
+  activity    String?  // JSON string of activity log
+  dueDate     DateTime?
+  assignedTo  String?
+  label       String?
+  pendingItems String? // JSON string of pending items
+  fieldConfiguration String? // JSON string of field values
+  projectType String?  // Project type (e.g., "scrum-board", "registro-civil")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("projects")
+}

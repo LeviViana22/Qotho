@@ -96,7 +96,7 @@ const RolesPermissionsGroups = () => {
                                 iconAlignment="end"
                                 onClick={() => handleEditRoleClick(role.id)}
                             >
-                                Edit role
+                                Editar
                             </Button>
                         </div>
                     </div>

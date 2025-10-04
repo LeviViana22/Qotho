@@ -7,13 +7,33 @@ import RolesPermissionsUserSelected from './_components/RolesPermissionsUserSele
 import RolesPermissionsAccessDialog from './_components/RolesPermissionsAccessDialog'
 import RolesPermissionsProvider from './_components/RolesPermissionsProvider'
 import getRolesPermissionsRoles from '@/server/actions/getRolesPermissionsRoles'
-import getRolesPermissionsUsers from '@/server/actions/getRolesPermissionsUsers'
+import { getAllUsers } from '@/lib/user'
+import { requireAdmin } from '@/utils/serverPageAccess'
 
 export default async function Page({ searchParams }) {
+    // Require admin access using the new utility
+    const session = await requireAdmin()
+    
     const params = await searchParams
 
     const roleList = await getRolesPermissionsRoles()
-    const userList = await getRolesPermissionsUsers(params)
+    
+    // Get users from database
+    const users = await getAllUsers()
+    
+    // Map image field to img for frontend compatibility
+    const mappedUsers = users.map(user => {
+        const { password, ...safeUser } = user
+        return {
+            ...safeUser,
+            img: safeUser.image || '', // Map image to img for frontend
+        }
+    })
+    
+    const userList = {
+        list: mappedUsers,
+        total: mappedUsers.length
+    }
 
     return (
         <RolesPermissionsProvider
@@ -25,7 +45,7 @@ export default async function Page({ searchParams }) {
             <Container>
                 <div className="mb-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h3>Roles & Permissions</h3>
+                        <h3>Funções e permissões</h3>
                         <RolesPermissionsGroupsAction />
                     </div>
                     <div className="mb-10">
@@ -35,7 +55,7 @@ export default async function Page({ searchParams }) {
                 <div>
                     <div>
                         <div className="mb-6 flex flex-col gap-5">
-                            <h3>All accounts</h3>
+                            <h3>Todos os usuários</h3>
                             <div className="flex-1">
                                 <RolesPermissionsUserAction />
                             </div>

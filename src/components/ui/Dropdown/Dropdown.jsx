@@ -1,6 +1,6 @@
 import { DropdownContextProvider } from './context/dropdownContext'
 import DropdownMenu from './DropdownMenu'
-import { FloatingTree, useFloatingParentNodeId } from '@floating-ui/react'
+import { CustomFloatingTree, useFloatingParentNodeId } from './CustomFloatingTree'
 
 const Dropdown = ({ activeKey, ref, ...props }) => {
     const parentId = useFloatingParentNodeId()
@@ -8,9 +8,9 @@ const Dropdown = ({ activeKey, ref, ...props }) => {
     if (parentId === null) {
         return (
             <DropdownContextProvider value={{ activeKey }}>
-                <FloatingTree>
+                <CustomFloatingTree>
                     <DropdownMenu {...props} ref={ref} />
-                </FloatingTree>
+                </CustomFloatingTree>
             </DropdownContextProvider>
         )
     }

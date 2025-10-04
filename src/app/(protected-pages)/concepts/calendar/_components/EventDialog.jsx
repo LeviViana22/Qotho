@@ -4,6 +4,7 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import DatePicker from '@/components/ui/DatePicker'
+import TimeInput from '@/components/ui/TimeInput'
 import Dialog from '@/components/ui/Dialog'
 import { Form, FormItem } from '@/components/ui/Form'
 import Badge from '@/components/ui/Badge'
@@ -22,32 +23,32 @@ const { useUniqueId } = hooks
 const colorOptions = [
     {
         value: 'red',
-        label: 'red',
+        label: 'vermelho',
         color: 'bg-red-400',
     },
     {
         value: 'orange',
-        label: 'orange',
+        label: 'laranja',
         color: 'bg-orange-400',
     },
     {
         value: 'yellow',
-        label: 'yellow',
+        label: 'amarelo',
         color: 'bg-yellow-400',
     },
     {
         value: 'green',
-        label: 'green',
+        label: 'verde',
         color: 'bg-green-400',
     },
     {
         value: 'blue',
-        label: 'blue',
+        label: 'azul',
         color: 'bg-blue-400',
     },
     {
         value: 'purple',
-        label: 'purple',
+        label: 'roxo',
         color: 'bg-purple-400',
     },
 ]
@@ -90,15 +91,15 @@ const validationSchema = z.object({
         required_error: 'Please select a date',
         invalid_type_error: "That's not a date!",
     }),
-    endDate: z.date({
-        required_error: 'Please select a date',
-        invalid_type_error: "That's not a date!",
+    eventTime: z.date({
+        required_error: 'Please select a time',
+        invalid_type_error: "That's not a valid time!",
     }),
     color: z.string().min(1, { message: 'Color required' }),
 })
 
 const EventDialog = (props) => {
-    const { submit, open, selected, onDialogOpen } = props
+    const { submit, open, selected, onDialogOpen, onDelete } = props
 
     const newId = useUniqueId('event-')
 
@@ -106,16 +107,34 @@ const EventDialog = (props) => {
         onDialogOpen(false)
     }
 
+    const handleDelete = () => {
+        if (selected.type === 'EDIT' && selected.id) {
+            onDelete?.(selected.id)
+            handleDialogClose()
+        }
+    }
+
     const onSubmit = (values) => {
+        // Combine start date with selected time
+        const startDate = dayjs(values.startDate)
+        const eventTime = dayjs(values.eventTime)
+        
+        // Create the start datetime by combining date and time
+        const startDateTime = startDate
+            .hour(eventTime.hour())
+            .minute(eventTime.minute())
+            .second(0)
+            .millisecond(0)
+
         const eventData = {
             id: selected.id || newId,
             title: values.title,
-            start: dayjs(values.startDate).format(),
+            start: startDateTime.format(),
             eventColor: values.color,
+            // Store the time for display purposes
+            eventTime: eventTime.format('HH:mm'),
         }
-        if (values.endDate) {
-            eventData.end = dayjs(values.endDate).format()
-        }
+        
         console.log('eventData', eventData)
         submit?.(eventData, selected.type)
         handleDialogClose()
@@ -132,10 +151,11 @@ const EventDialog = (props) => {
 
     useEffect(() => {
         if (selected) {
+            const startDate = selected.start ? dayjs(selected.start) : null
             reset({
                 title: selected.title || '',
-                startDate: selected.start && dayjs(selected.start).toDate(),
-                endDate: selected.end && dayjs(selected.end).toDate(),
+                startDate: startDate ? startDate.toDate() : null,
+                eventTime: startDate ? startDate.toDate() : new Date(),
                 color: selected.eventColor || colorOptions[0].value,
             })
         }
@@ -149,14 +169,14 @@ const EventDialog = (props) => {
             onRequestClose={handleDialogClose}
         >
             <h5 className="mb-4">
-                {selected.type === 'NEW' ? 'Add New Event' : 'Edit Event'}
+                {selected.type === 'NEW' ? 'Adicionar novo evento' : 'Editar evento'}
             </h5>
             <Form
                 className="flex-1 flex flex-col"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <FormItem
-                    label="Event title"
+                    label="Nome do evento"
                     invalid={Boolean(errors.title)}
                     errorMessage={errors.title?.message}
                 >
@@ -167,14 +187,14 @@ const EventDialog = (props) => {
                             <Input
                                 type="text"
                                 autoComplete="off"
-                                placeholder="Event title"
+                                placeholder="Nome do evento"
                                 {...field}
                             />
                         )}
                     />
                 </FormItem>
                 <FormItem
-                    label="Start date"
+                    label="Data de início"
                     invalid={Boolean(errors.startDate)}
                     errorMessage={errors.startDate?.message}
                 >
@@ -185,28 +205,33 @@ const EventDialog = (props) => {
                             <DatePicker
                                 value={field.value}
                                 onChange={field.onChange}
+                                inputFormat="DD/MM/YYYY"
+                                placeholder="DD/MM/YYYY"
                             />
                         )}
                     />
                 </FormItem>
                 <FormItem
-                    label="End date"
-                    invalid={Boolean(errors.endDate)}
-                    errorMessage={errors.endDate?.message}
+                    label="Horário"
+                    invalid={Boolean(errors.eventTime)}
+                    errorMessage={errors.eventTime?.message}
                 >
                     <Controller
-                        name="endDate"
+                        name="eventTime"
                         control={control}
                         render={({ field }) => (
-                            <DatePicker
+                            <TimeInput
                                 value={field.value}
                                 onChange={field.onChange}
+                                format="24"
+                                showSeconds={false}
+                                placeholder="Selecione o horário"
                             />
                         )}
                     />
                 </FormItem>
                 <FormItem
-                    label="Event color"
+                    label="Cor"
                     asterisk={true}
                     invalid={Boolean(errors.color)}
                     errorMessage={errors.color?.message}
@@ -233,9 +258,21 @@ const EventDialog = (props) => {
                     />
                 </FormItem>
                 <FormItem className="mb-0 text-right rtl:text-left">
-                    <Button block variant="solid" type="submit">
-                        {selected.type === 'NEW' ? 'Create' : 'Update'}
-                    </Button>
+                    <div className="flex gap-2">
+                        {selected.type === 'EDIT' && (
+                            <Button 
+                                type="button" 
+                                variant="outline" 
+                                className="text-red-600 border-red-600 hover:bg-red-50"
+                                onClick={handleDelete}
+                            >
+                                Excluir
+                            </Button>
+                        )}
+                        <Button block variant="solid" type="submit">
+                            {selected.type === 'NEW' ? 'Criar' : 'Atualizar'}
+                        </Button>
+                    </div>
                 </FormItem>
             </Form>
         </Dialog>

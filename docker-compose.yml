@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:14
+    container_name: qotho-postgres
+    environment:
+      POSTGRES_DB: qotho_db
+      POSTGRES_USER: qotho_user
+      POSTGRES_PASSWORD: qotho_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qotho_user -d qotho_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

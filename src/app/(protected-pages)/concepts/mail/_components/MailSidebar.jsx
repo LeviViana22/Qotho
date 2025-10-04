@@ -5,7 +5,7 @@ import Badge from '@/components/ui/Badge'
 import ScrollBar from '@/components/ui/ScrollBar'
 import Drawer from '@/components/ui/Drawer'
 import { useMailStore } from '../_store/mailStore'
-import { groupList, labelList } from '../constants'
+import { groupList } from '../constants'
 import classNames from '@/utils/classNames'
 import { useRouter, useSearchParams } from 'next/navigation'
 
@@ -66,34 +66,6 @@ const MailSideBarContent = ({ title }) => {
                         </MenuItem>
                     ))}
                 </Menu>
-                <Menu className="mx-2 mb-6">
-                    <MenuGroup label="Labels">
-                        {labelList.map((label) => (
-                            <MenuItem
-                                key={label.value}
-                                eventKey={label.value}
-                                className={`mb-2 ${
-                                    selectedCategory.value === label.value
-                                        ? 'bg-gray-100 dark:bg-gray-700'
-                                        : ''
-                                }`}
-                                isActive={currentPath === label.value}
-                                onSelect={() =>
-                                    onMenuClick({
-                                        category: '',
-                                        label: label.value,
-                                    })
-                                }
-                            >
-                                <Badge
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    innerClass={label.dotClass}
-                                />
-                                <span>{label.label}</span>
-                            </MenuItem>
-                        ))}
-                    </MenuGroup>
-                </Menu>
             </ScrollBar>
         </div>
     )
@@ -122,7 +94,7 @@ const MailSidebar = () => {
                 </div>
             </Drawer>
             <div className={classNames('w-[240px]')}>
-                <MailSideBarContent title="Mailbox" />
+                <MailSideBarContent title="Email" />
             </div>
         </>
     )

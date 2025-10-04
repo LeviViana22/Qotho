@@ -9,42 +9,42 @@ import { TbMessageCircleCheck } from 'react-icons/tb'
 
 const emailNotificationOption = [
     {
-        label: 'News & updates',
+        label: 'Notícias & atualizações',
         value: 'newsAndUpdate',
-        desc: 'New about product and features update',
+        desc: 'Novidades sobre o produto e atualizações de funcionalidades',
     },
     {
-        label: 'Tips & tutorials',
+        label: 'Dicas & tutoriais',
         value: 'tipsAndTutorial',
-        desc: 'Tips & trick in order to increase your performance efficiency',
+        desc: 'Dicas & truques para aumentar a eficiência do seu desempenho',
     },
     {
-        label: 'Offer & promotions',
+        label: 'Ofertas & promoções',
         value: 'offerAndPromotion',
-        desc: 'Promotion about product price & lastest discount',
+        desc: 'Promoções sobre o preço do produto e descontos mais recentes',
     },
     {
-        label: 'Follow up remider',
+        label: 'Acompanhamento de lembretes',
         value: 'followUpReminder',
-        desc: 'Receive notification all the reminder that have been made',
+        desc: 'Receba notificações de todos os lembretes que foram feitos',
     },
 ]
 
 const notifyMeOption = [
     {
-        label: 'All new messages',
+        label: 'Todas as novas mensagens',
         value: 'allNewMessage',
-        desc: 'Broadcast notifications to the channel for each new message',
+        desc: 'Notificações de broadcast para o canal para cada nova mensagem',
     },
     {
-        label: 'Mentions only',
+        label: 'Menções apenas',
         value: 'mentionsOnly',
-        desc: 'Only alert me in the channel if someone mentions me in a message',
+        desc: 'Apenas me avise no canal se alguém me mencionar em uma mensagem',
     },
     {
-        label: 'Nothing',
+        label: 'Sem notificações',
         value: 'nothing',
-        desc: `Don't notify me anything`,
+        desc: `Não me notifique nada`,
     },
 ]
 
@@ -109,14 +109,13 @@ const SettingsNotification = () => {
 
     return (
         <div>
-            <h4>Notification</h4>
+            <h4>Notificações</h4>
             <div className="mt-2">
                 <div className="flex items-center justify-between py-6 border-b border-gray-200 dark:border-gray-600">
                     <div>
-                        <h5>Enable desktop notification</h5>
+                        <h5>Ativar notificação de desktop</h5>
                         <p>
-                            Decide whether you want to be notified of new
-                            message & updates
+                            Decide se você quer ser notificado de novas mensagens e atualizações
                         </p>
                     </div>
                     <div>
@@ -128,10 +127,9 @@ const SettingsNotification = () => {
                 </div>
                 <div className="flex items-center justify-between py-6 border-b border-gray-200 dark:border-gray-600">
                     <div>
-                        <h5>Enable unread notification badge</h5>
+                        <h5>Ativar notificação de mensagens não lidas</h5>
                         <p>
-                            Display a red indicator on of the notification icon
-                            when you have unread message
+                            Exibe um indicador vermelho no ícone de notificação quando você tiver mensagens não lidas
                         </p>
                     </div>
                     <div>
@@ -142,7 +140,7 @@ const SettingsNotification = () => {
                     </div>
                 </div>
                 <div className="py-6 border-b border-gray-200 dark:border-gray-600">
-                    <h5>Enable unread notification badge</h5>
+                    <h5>Ativar notificação de mensagens não lidas</h5>
                     <div className="mt-4">
                         <Radio.Group
                             vertical
@@ -171,10 +169,9 @@ const SettingsNotification = () => {
                 </div>
                 <div className="flex items-center justify-between py-6">
                     <div>
-                        <h5>Email notification</h5>
+                        <h5>Notificação por email</h5>
                         <p>
-                            Substance can send you email notification for any
-                            new direct message
+                            Velin pode enviar notificações por email para qualquer nova mensagem direta
                         </p>
                     </div>
                     <div>

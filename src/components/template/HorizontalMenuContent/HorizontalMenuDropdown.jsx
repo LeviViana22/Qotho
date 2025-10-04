@@ -4,18 +4,13 @@ import {
     flip,
     FloatingFocusManager,
     FloatingList,
-    FloatingNode,
     FloatingPortal,
-    FloatingTree,
     offset,
     safePolygon,
     shift,
     useClick,
     useDismiss,
     useFloating,
-    useFloatingNodeId,
-    useFloatingParentNodeId,
-    useFloatingTree,
     useHover,
     useInteractions,
     useListItem,
@@ -25,6 +20,8 @@ import {
     useTypeahead,
     useTransitionStyles,
 } from '@floating-ui/react'
+import { CustomFloatingNode, CustomFloatingTree, useFloatingParentNodeId, useFloatingTree } from '@/components/ui/Dropdown/CustomFloatingTree'
+import useUniqueId from '@/components/ui/hooks/useUniqueId'
 
 const MenuContext = createContext({
     getItemProps: () => ({}),
@@ -46,7 +43,7 @@ const HorizontalMenuDropdown = (props) => {
     const parent = useContext(MenuContext)
 
     const tree = useFloatingTree()
-    const nodeId = useFloatingNodeId()
+    const nodeId = useUniqueId('horizontal-menu-node-')
     const parentId = useFloatingParentNodeId()
     const item = useListItem()
 
@@ -175,8 +172,8 @@ const HorizontalMenuDropdown = (props) => {
     }
 
     return (
-        <FloatingTree>
-            <FloatingNode id={nodeId}>
+        <CustomFloatingTree>
+            <CustomFloatingNode id={nodeId}>
                 {triggerContent?.({
                     ref: dropdownRef,
                     props: dropdownProps,
@@ -209,6 +206,7 @@ const HorizontalMenuDropdown = (props) => {
                                         style={floatingStyles}
                                         className="outline-hidden z-40"
                                         {...getFloatingProps()}
+                                        suppressHydrationWarning
                                     >
                                         {menuContent?.({
                                             styles,
@@ -220,8 +218,8 @@ const HorizontalMenuDropdown = (props) => {
                         )}
                     </FloatingList>
                 </MenuContext.Provider>
-            </FloatingNode>
-        </FloatingTree>
+            </CustomFloatingNode>
+        </CustomFloatingTree>
     )
 }
 

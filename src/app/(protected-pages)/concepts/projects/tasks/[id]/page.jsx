@@ -11,17 +11,9 @@ export default async function Page(props) {
     const data = await getTask(params)
     const memberList = await getSrcumboardMembers()
 
-    if (isEmpty(data)) {
-        return (
-            <div className="h-full flex flex-col items-center justify-center">
-                <NotFound message="No issue found!" />
-            </div>
-        )
-    }
-
     return (
-        <IssueProvider issueData={data} memberList={memberList}>
-            <Issue />
+        <IssueProvider issueData={data || {}} memberList={memberList}>
+            <Issue projectId={params.id} />
         </IssueProvider>
     )
 }

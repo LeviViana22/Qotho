@@ -45,10 +45,10 @@ const ChatLandingView = () => {
             <div>
                 <div className="heading-text text-4xl leading-snug">
                     <span className="font-semibold bg-linear-to-r from-indigo-500 to-red-400 bg-clip-text text-transparent text-5xl">
-                        Hello, there
+                        Olá
                     </span>
                     <br />
-                    <span>How can I help you today?</span>
+                    <span>Como posso te ajudar hoje?</span>
                 </div>
                 <div className="mt-8 grid grid-cols-2 xl:grid-cols-4 gap-4">
                     {promptSuggestion.map((suggestion) => (
