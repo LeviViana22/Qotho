@@ -38,7 +38,7 @@ export const addUser = async (userData) => {
   const newUser = {
     id: (users.length + 1).toString(),
     ...userData,
-    lastOnline: 1640995200, // Fixed timestamp: 2022-01-01 00:00:00 UTC
+    lastOnline: Math.floor(Date.now() / 1000), // Current timestamp in seconds
     orderHistory: [],
     paymentMethod: [],
     subscription: [],

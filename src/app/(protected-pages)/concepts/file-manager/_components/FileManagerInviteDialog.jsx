@@ -23,16 +23,43 @@ const FileManagerInviteDialog = () => {
     }
 
     const handleInvite = async () => {
+        const email = inputRef.current?.value
+        if (!email) return
+        
         setInviting(true)
-        await sleep(500)
-        toast.push(
-            <Notification
-                type="success"
-                title="Invitation send!"
-            ></Notification>,
-            { placement: 'top-end' },
-        )
-        setInviting(false)
+        try {
+            const response = await fetch(`/api/files/${inviteDialog.id}/share`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, role: 'reader' }),
+            })
+            
+            if (response.ok) {
+                toast.push(
+                    <Notification
+                        type="success"
+                        title="Invitation sent!"
+                    ></Notification>,
+                    { placement: 'top-end' },
+                )
+                inputRef.current.value = ''
+            } else {
+                throw new Error('Failed to share file')
+            }
+        } catch (error) {
+            console.error('Share error:', error)
+            toast.push(
+                <Notification
+                    type="danger"
+                    title="Failed to share file"
+                ></Notification>,
+                { placement: 'top-end' },
+            )
+        } finally {
+            setInviting(false)
+        }
     }
 
     const handleCopy = async () => {

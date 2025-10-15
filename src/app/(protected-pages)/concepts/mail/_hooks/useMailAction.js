@@ -214,12 +214,20 @@ const useMailAction = () => {
     }
 
     const onMailDelete = async (mailsId) => {
-        // Get current category
-        const currentFolder = selectedCategory?.value || 'inbox'
+        // Get current category from URL parameters instead of store
+        const currentFolder = searchParams.get('category') || 'inbox'
+        
+        console.log('onMailDelete: Starting delete process')
+        console.log('onMailDelete: Email IDs to delete:', mailsId)
+        console.log('onMailDelete: Current folder from URL:', currentFolder)
+        console.log('onMailDelete: URL search params:', Object.fromEntries(searchParams.entries()))
         
         // Determine if emails should be moved to trash or deleted permanently
         const shouldMoveToTrash = ['inbox', 'sentItem', 'draft', 'archive'].includes(currentFolder)
         const shouldDeletePermanently = ['deleted', 'junk'].includes(currentFolder)
+        
+        console.log('onMailDelete: Should move to trash:', shouldMoveToTrash)
+        console.log('onMailDelete: Should delete permanently:', shouldDeletePermanently)
         
         // Use store actions for client-side tracking
         const { deleteEmail, restoreEmail } = useMailStore.getState()
@@ -244,6 +252,7 @@ const useMailAction = () => {
             for (const emailId of mailsId) {
                 if (shouldMoveToTrash) {
                     // Move to trash folder
+                    console.log(`onMailDelete: Moving email ${emailId} to trash from folder ${currentFolder}`)
                     const response = await fetch('/api/email/remover', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -254,7 +263,7 @@ const useMailAction = () => {
                         }),
                     })
                     const result = await response.json()
-                    console.log('Move to trash result:', result)
+                    console.log(`onMailDelete: Move to trash result for ${emailId}:`, result)
                     
                     if (result.success) {
                         successfulDeletions.push(emailId)

@@ -47,7 +47,7 @@ export async function POST(request) {
         }
 
         // Update last online
-        await updateLastOnline(user.id)
+        const updatedUser = await updateLastOnline(user.id)
 
         // Create JWT token
         const token = await new SignJWT({
@@ -60,7 +60,7 @@ export async function POST(request) {
             lastName: user.lastName,
             title: user.title,
             personalInfo: user.personalInfo,
-            lastOnline: user.lastOnline,
+            lastOnline: updatedUser.lastOnline,
         })
             .setProtectedHeader({ alg: 'HS256' })
             .setIssuedAt()
@@ -81,7 +81,7 @@ export async function POST(request) {
                     lastName: user.lastName,
                     title: user.title,
                     personalInfo: user.personalInfo,
-                    lastOnline: user.lastOnline,
+                    lastOnline: updatedUser.lastOnline,
                 }
             },
             { status: 200 }

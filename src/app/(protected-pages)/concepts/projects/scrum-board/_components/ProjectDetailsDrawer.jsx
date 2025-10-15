@@ -1063,7 +1063,7 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
     }
 
     const onAddMemberClick = async (memberId) => {
-        const newMember = memberList.find((member) => member.id === memberId)
+        const newMember = allUsers?.find((member) => member.id === memberId)
         
         if (newMember && localIssueData) {
             const oldMembers = localIssueData.members || []
@@ -1452,32 +1452,56 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
                                                             users={localIssueData.members || []}
                                                             onAvatarClick={onRemoveMemberClick}
                                                         />
-                                                        {memberList.length !== localIssueData.members?.length && (
-                                                            <Dropdown renderTitle={<AddMoreMember />}>
-                                                                {memberList.map((member) =>
-                                                                    !localIssueData.members?.some((m) => m.id === member.id) && (
-                                                                        <Dropdown.Item
-                                                                            key={member.name}
-                                                                            eventKey={member.id}
-                                                                            onSelect={onAddMemberClick}
-                                                                        >
-                                                                            <div className="flex items-center justify-between">
-                                                                                <div className="flex items-center">
-                                                                                    <Avatar
-                                                                                        shape="circle"
-                                                                                        size={22}
-                                                                                        src={member.img}
-                                                                                    />
-                                                                                    <span className="ml-2 rtl:mr-2">
-                                                                                        {member.name}
-                                                                                    </span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </Dropdown.Item>
-                                                                    ),
-                                                                )}
-                                                            </Dropdown>
-                                                        )}
+                                                        <Dropdown
+                                                            renderTitle={
+                                                                <Button
+                                                                    icon={<TbPlus />}
+                                                                    customColorClass={() =>
+                                                                        'border-2 border-dashed hover:ring-0 h-[30px] w-[30px] text-sm'
+                                                                    }
+                                                                    size="sm"
+                                                                    shape="circle"
+                                                                    type="button"
+                                                                />
+                                                            }
+                                                            placement="bottom"
+                                                        >
+                                                            {(allUsers || []).map((member) => {
+                                                                const members = Array.isArray(localIssueData.members) 
+                                                                    ? localIssueData.members 
+                                                                    : (typeof localIssueData.members === 'string' 
+                                                                        ? JSON.parse(localIssueData.members || '[]') 
+                                                                        : [])
+                                                                const isSelected = members.some((m) => m.id === member.id)
+                                                                return (
+                                                                    <Dropdown.Item
+                                                                        key={member.id}
+                                                                        eventKey={member.id}
+                                                                        onSelect={() => {
+                                                                            if (isSelected) {
+                                                                                onRemoveMemberClick(member)
+                                                                            } else {
+                                                                                onAddMemberClick(member.id)
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <div className="flex items-center">
+                                                                            <Avatar
+                                                                                shape="circle"
+                                                                                size={22}
+                                                                                src={member.img}
+                                                                            />
+                                                                            <span className="ml-2 rtl:mr-2">
+                                                                                {member.name}
+                                                                            </span>
+                                                                            {isSelected && (
+                                                                                <span className="ml-auto text-green-500">✓</span>
+                                                                            )}
+                                                                        </div>
+                                                                    </Dropdown.Item>
+                                                                )
+                                                            })}
+                                                        </Dropdown>
                                                     </div>
                                                 </IssueField>
                                             </div>

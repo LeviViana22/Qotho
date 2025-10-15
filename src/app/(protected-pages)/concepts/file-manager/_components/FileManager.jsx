@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Table from '@/components/ui/Table'
 import TableRowSkeleton from '@/components/shared/loaders/TableRowSkeleton'
 import FileManagerHeader from './FileManagerHeader'
@@ -9,6 +9,7 @@ import FileDetails from './FileDetails'
 import FileManagerDeleteDialog from './FileManagerDeleteDialog'
 import FileManagerInviteDialog from './FileManagerInviteDialog'
 import FileManagerRenameDialog from './FileManagerRenameDialog'
+import GoogleDriveAuth from './GoogleDriveAuth'
 import { useFileManagerStore } from '../_store/useFileManagerStore'
 import { apiGetFiles } from '@/services/FileService'
 import useSWRMutation from 'swr/mutation'
@@ -23,6 +24,9 @@ async function getFile(_, { arg }) {
 }
 
 const FileManager = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [authError, setAuthError] = useState(null)
+    
     const {
         layout,
         fileList,
@@ -43,12 +47,36 @@ const FileManager = () => {
             onSuccess: (resp) => {
                 setDirectories(resp.directory)
                 setFileList(resp.list)
+                setIsAuthenticated(true)
             },
+            onError: (error) => {
+                if (error.status === 401) {
+                    setIsAuthenticated(false)
+                    setAuthError('Please connect to Google Drive')
+                } else {
+                    setAuthError('Failed to load files')
+                }
+            }
         },
     )
 
     useEffect(() => {
-        if (fileList.length === 0) {
+        // Check URL parameters for auth status
+        const urlParams = new URLSearchParams(window.location.search)
+        const authSuccess = urlParams.get('success')
+        const authError = urlParams.get('error')
+        
+        if (authSuccess === 'auth_success') {
+            setIsAuthenticated(true)
+            setAuthError(null)
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname)
+        } else if (authError) {
+            setAuthError('Authentication failed. Please try again.')
+            setIsAuthenticated(false)
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname)
+        } else if (fileList.length === 0) {
             trigger(openedDirectoryId)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,23 +90,37 @@ const FileManager = () => {
         setDeleteDialog({ id, open: true })
     }
 
-    const handleDownload = () => {
-        const blob = new Blob(
-            [
-                'This text file is created to demonstrate how file downloading works in our template demo.',
-            ],
-            { type: 'text/plain;charset=utf-8' },
-        )
+    const handleDownload = async (fileId) => {
+        try {
+            const response = await fetch(`/api/files/${fileId}/download`)
+            const data = await response.json()
+            
+            if (data.downloadUrl) {
+                // Open the download URL in a new tab
+                window.open(data.downloadUrl, '_blank')
+            } else {
+                throw new Error('No download URL received')
+            }
+        } catch (error) {
+            console.error('Download error:', error)
+            // Fallback to demo download
+            const blob = new Blob(
+                [
+                    'This text file is created to demonstrate how file downloading works in our template demo.',
+                ],
+                { type: 'text/plain;charset=utf-8' },
+            )
 
-        const link = document.createElement('a')
-        link.href = window.URL.createObjectURL(blob)
-        link.download = 'sample-dowoad-file'
-        document.body.appendChild(link)
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(blob)
+            link.download = 'sample-download-file'
+            document.body.appendChild(link)
 
-        link.click()
+            link.click()
 
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(link.href)
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(link.href)
+        }
     }
 
     const handleRename = (id) => {
@@ -102,6 +144,20 @@ const FileManager = () => {
 
     const handleClick = (fileId) => {
         setSelectedFile(fileId)
+    }
+
+    // Show authentication component if not authenticated
+    if (!isAuthenticated) {
+        return (
+            <div>
+                {authError && (
+                    <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                        <p className="text-red-600 dark:text-red-400">{authError}</p>
+                    </div>
+                )}
+                <GoogleDriveAuth onAuthSuccess={() => setIsAuthenticated(true)} />
+            </div>
+        )
     }
 
     return (

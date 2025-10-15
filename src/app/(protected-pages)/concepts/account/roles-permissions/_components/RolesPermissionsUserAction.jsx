@@ -15,15 +15,7 @@ const statusOptions = [
     { label: 'Bloqueado', value: 'blocked', dotBackground: 'bg-error' },
 ]
 
-const roleOptions = [
-    { label: 'Todos', value: '' },
-    { label: 'Administrador', value: 'admin' },
-    { label: 'Supervisor', value: 'supervisor' },
-    { label: 'Suporte', value: 'support' },
-    { label: 'Usuário', value: 'user' },
-    { label: 'Auditor', value: 'auditor' },
-    { label: 'Convidado', value: 'guest' },
-]
+// Dynamic role options will be generated from the store
 
 const StatusSelectOption = (props) => {
     return (
@@ -67,8 +59,18 @@ const RolesPermissionsUserAction = () => {
     const setFilterData = useRolePermissionsStore(
         (state) => state.setFilterData,
     )
+    const roleList = useRolePermissionsStore((state) => state.roleList)
 
     const { onAppendQueryParams } = useAppendQueryParams()
+
+    // Generate dynamic role options from roleList
+    const roleOptions = [
+        { label: 'Todos', value: '' },
+        ...roleList.map(role => ({
+            label: role.name,
+            value: role.id
+        }))
+    ]
 
     const handleStatusChange = (status) => {
         setFilterData({ ...filterData, status })
@@ -85,6 +87,7 @@ const RolesPermissionsUserAction = () => {
     }
 
     const handleInputChange = (query) => {
+        setFilterData({ ...filterData, query })
         onAppendQueryParams({
             query,
         })
@@ -113,9 +116,12 @@ const RolesPermissionsUserAction = () => {
                     placeholder="Status"
                     defaultValue={{
                         label: 'Todos',
-                        value: 'Todos',
+                        value: '',
                         dotBackground: 'bg-gray-200',
                     }}
+                    value={statusOptions.find(
+                        (option) => option.value === filterData.status,
+                    )}
                     onChange={(option) =>
                         handleStatusChange(option?.value || '')
                     }

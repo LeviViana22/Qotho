@@ -1,4 +1,83 @@
 {
-  "deletedEmailIds": [],
-  "deletedEmailsStorage": {}
+  "deletedEmailIds": [
+    "email_108",
+    "email_109",
+    "email_91"
+  ],
+  "deletedEmailsStorage": {
+    "email_108": {
+      "id": "email_108",
+      "name": "Unknown",
+      "title": "Deleted Email",
+      "message": [
+        {
+          "id": "msg_1234567890",
+          "name": "Unknown",
+          "content": "This email was deleted",
+          "date": "2022-01-01",
+          "avatar": ""
+        }
+      ],
+      "starred": false,
+      "flagged": false,
+      "checked": false,
+      "label": "deleted",
+      "from": "unknown@example.com",
+      "to": "",
+      "date": "2025-10-11T02:00:41.649Z",
+      "content": "This email was deleted",
+      "attachments": []
+    },
+    "email_109": {
+      "id": "email_109",
+      "name": "Unknown",
+      "title": "Deleted Email",
+      "message": [
+        {
+          "id": "msg_1234567890",
+          "name": "Unknown",
+          "content": "This email was deleted",
+          "date": "2022-01-01",
+          "avatar": ""
+        }
+      ],
+      "starred": false,
+      "flagged": false,
+      "checked": false,
+      "label": "deleted",
+      "from": "unknown@example.com",
+      "to": "",
+      "date": "2025-10-11T02:00:50.231Z",
+      "content": "This email was deleted",
+      "attachments": []
+    },
+    "email_91": {
+      "id": "email_91",
+      "name": "\"Squarespace\"",
+      "title": "Veja as possibilidades",
+      "message": [
+        {
+          "id": "msg_91",
+          "name": "\"Squarespace\"",
+          "mail": [
+            "controle@cartoriolealceara.com.br"
+          ],
+          "from": "\"Squarespace\" <noreply@mail.squarespace.com>",
+          "avatar": "/img/avatars/thumb-8.jpg",
+          "date": "17:22",
+          "content": "",
+          "attachment": []
+        }
+      ],
+      "starred": false,
+      "flagged": false,
+      "checked": false,
+      "label": "deleted",
+      "from": "\"Squarespace\" <noreply@mail.squarespace.com>",
+      "to": "controle@cartoriolealceara.com.br",
+      "date": "2025-08-05T20:22:42.000Z",
+      "content": "This email was deleted",
+      "attachments": []
+    }
+  }
 }

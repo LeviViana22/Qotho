@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { useRegistroCivilStore } from '../_store/registroCivilStore'
-import { useTasksStore } from '../../tasks/_store/tasksStore'
+// Removed tasksStore import - Registro Civil is completely separate
 import { useProjectStore } from '../../_store/projectStore'
 import useUserStore from '@/stores/userStore'
 import { useUserStoreHydrated } from '@/hooks/useUserStoreHydrated'
@@ -21,13 +21,12 @@ const RegistroCivilProvider = ({ children, data: initialData, projectMembers = n
     const updateAllMembers = useRegistroCivilStore(
         (state) => state.updateAllMembers,
     )
-    const syncWithTasks = useRegistroCivilStore((state) => state.syncWithTasks)
-    const updateTasks = useRegistroCivilStore((state) => state.updateTasks)
+    // Removed syncWithTasks and updateTasks - Registro Civil is completely separate
     const loadFromLocalStorage = useRegistroCivilStore((state) => state.loadFromLocalStorage)
     const loadBoardMembers = useRegistroCivilStore((state) => state.loadBoardMembers)
     const setIsLoading = useRegistroCivilStore((state) => state.setIsLoading)
     
-    const tasksStore = useTasksStore()
+    // Removed tasksStore - Registro Civil is completely separate
     
     // Use the dedicated hook for managing registro civil users
     const { users, isHydrated, isInitialized, hasUsers } = useRegistroCivilUsers()
@@ -67,13 +66,8 @@ const RegistroCivilProvider = ({ children, data: initialData, projectMembers = n
         }
     }, [])
     
-    // Load data from project store if available (for persistence) - only on initial load
-    useEffect(() => {
-        if (scrumBoardData && Object.keys(scrumBoardData).length > 0 && !serverData) {
-            setServerData(scrumBoardData)
-            setIsLoading(false)
-        }
-    }, [scrumBoardData, serverData, setIsLoading]) // Added setIsLoading to prevent circular updates
+    // Don't load from project store for registro civil - always use fresh database data
+    // This prevents old localStorage data from overwriting fresh database data
     
     // Carregar dados do localStorage primeiro, depois do servidor se necessário
     useEffect(() => {
@@ -91,6 +85,7 @@ const RegistroCivilProvider = ({ children, data: initialData, projectMembers = n
                     const response = await fetch('/api/projects/registro-civil')
                     if (response.ok) {
                         const data = await response.json()
+                        console.log('Loaded data from database on page reload:', data)
                         if (data && Object.keys(data).length > 0) {
                             setServerData(data)
                             setIsLoading(false)
@@ -98,14 +93,15 @@ const RegistroCivilProvider = ({ children, data: initialData, projectMembers = n
                         }
                     }
                 } catch (error) {
+                    console.error('Error loading from database:', error)
                     // Error loading from database, will try localStorage
                 }
                 
-                // Final fallback to initial data
-                setServerData(initialData)
+                // No fallback - if database fails, keep empty state
+                setServerData({})
             } catch (error) {
                 console.error('Erro ao carregar dados:', error)
-                setServerData(initialData)
+                setServerData({})
             } finally {
                 setIsLoading(false)
             }
@@ -146,12 +142,8 @@ const RegistroCivilProvider = ({ children, data: initialData, projectMembers = n
             }
             updateFinalizedColumns(finalizedData)
             
-            // Atualizar diretamente o tasksStore se existir - ONLY for registro civil data, NOT for members
-            if (tasksStore) {
-                tasksStore.updateColumns(data)
-                tasksStore.updateOrdered(finalBoardOrder)
-                tasksStore.updateFinalizedColumns(finalizedData)
-            }
+            // NOTE: Registro Civil is completely separate from tasks/scrum board
+            // No need to sync with tasksStore to prevent conflicts
             
             // Atualizar as referências
             prevDataRef.current = data

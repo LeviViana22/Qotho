@@ -20,7 +20,7 @@ export async function createUser(userData) {
       title,
       image: image || '',
       personalInfo: personalInfo || {},
-      lastOnline: 1640995200, // Fixed timestamp: 2022-01-01 00:00:00 UTC
+      lastOnline: Math.floor(Date.now() / 1000), // Current timestamp in seconds
     },
   })
 
@@ -89,7 +89,7 @@ export async function verifyPassword(password, hashedPassword) {
 export async function updateLastOnline(userId) {
   return await prisma.user.update({
     where: { id: userId },
-    data: { lastOnline: 1640995200 }, // Fixed timestamp: 2022-01-01 00:00:00 UTC
+    data: { lastOnline: Math.floor(Date.now() / 1000) }, // Current timestamp in seconds
   })
 }
 

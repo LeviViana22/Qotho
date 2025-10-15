@@ -1,11 +1,21 @@
 import AddUser from './_components/AddUser'
-import { requireAdmin } from '@/utils/serverPageAccess'
+import PermissionSwitcher from '@/components/shared/PermissionSwitcher'
+import ClientAccessControl from '@/components/shared/ClientAccessControl'
 
 const Page = async () => {
-    // Require admin access to create users
-    await requireAdmin()
-    
-    return <AddUser />
+    return (
+        <ClientAccessControl requiredModule="users">
+            <div>
+                <div className="mb-6">
+                    <PermissionSwitcher 
+                        module="users"
+                        label="Criar usuários"
+                    />
+                </div>
+                <AddUser />
+            </div>
+        </ClientAccessControl>
+    )
 }
 
 export default Page

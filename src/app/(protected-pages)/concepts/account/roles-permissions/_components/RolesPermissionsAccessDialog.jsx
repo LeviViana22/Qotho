@@ -61,6 +61,35 @@ const RolesPermissionsAccessDialog = () => {
     }
 
     const handleUpdate = async () => {
+        const newRoleList = structuredClone(roleList)
+        const roleIndex = newRoleList.findIndex((role) => role.id === selectedRole)
+        
+        if (roleIndex !== -1) {
+            newRoleList[roleIndex] = {
+                ...newRoleList[roleIndex],
+                name: roleNameRef.current?.value || newRoleList[roleIndex].name,
+                description: descriptionRef.current?.value || newRoleList[roleIndex].description,
+                // Keep the existing accessRight from the roleList (already updated by handleChange)
+            }
+            setRoleList(newRoleList)
+            
+            // Save ALL role changes to localStorage (both custom and default roles)
+            if (typeof window !== 'undefined') {
+                // Save custom roles
+                const customRoles = JSON.parse(localStorage.getItem('customRoles') || '[]')
+                const customRoleIndex = customRoles.findIndex((role) => role.id === selectedRole)
+                if (customRoleIndex !== -1) {
+                    customRoles[customRoleIndex] = newRoleList[roleIndex]
+                    localStorage.setItem('customRoles', JSON.stringify(customRoles))
+                }
+                
+                // Save role modifications (for default roles like admin, user)
+                const roleModifications = JSON.parse(localStorage.getItem('roleModifications') || '{}')
+                roleModifications[selectedRole] = newRoleList[roleIndex]
+                localStorage.setItem('roleModifications', JSON.stringify(roleModifications))
+            }
+        }
+        
         handleClose()
         await sleep(300)
         setSelectedRole('')
@@ -68,14 +97,23 @@ const RolesPermissionsAccessDialog = () => {
 
     const handleSubmit = async () => {
         const newRoleList = structuredClone(roleList)
-        newRoleList.push({
+        const newRole = {
             id: newId,
             name: roleNameRef.current?.value || `Untitle-${newId}`,
             description: descriptionRef.current?.value || '',
             users: [],
             accessRight,
-        })
+        }
+        newRoleList.push(newRole)
         setRoleList(newRoleList)
+        
+        // Persist to localStorage
+        if (typeof window !== 'undefined') {
+            const existingCustomRoles = JSON.parse(localStorage.getItem('customRoles') || '[]')
+            existingCustomRoles.push(newRole)
+            localStorage.setItem('customRoles', JSON.stringify(existingCustomRoles))
+        }
+        
         handleClose()
     }
 

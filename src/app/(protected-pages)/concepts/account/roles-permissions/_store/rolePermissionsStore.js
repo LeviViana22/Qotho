@@ -3,6 +3,7 @@ import { create } from 'zustand'
 export const initialFilterData = {
     status: '',
     role: '',
+    query: '',
 }
 
 const initialState = {

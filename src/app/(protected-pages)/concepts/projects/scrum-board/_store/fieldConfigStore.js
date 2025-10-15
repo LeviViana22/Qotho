@@ -14,16 +14,16 @@ export const useFieldConfigStore = create(
         loadFieldConfigs: async () => {
             set({ isLoading: true })
             try {
-                const response = await fetch('/api/field-configs')
+                const response = await fetch('/api/field-configs/scrum-board')
                 if (response.ok) {
                     const data = await response.json()
                     set({ fieldConfig: data.fieldConfigs, isInitialized: true })
                 } else {
-                    console.error('Failed to load field configurations')
+                    console.error('Failed to load scrum-board field configurations')
                     set({ fieldConfig: [], isInitialized: true })
                 }
             } catch (error) {
-                console.error('Error loading field configurations:', error)
+                console.error('Error loading scrum-board field configurations:', error)
                 set({ fieldConfig: [], isInitialized: true })
             } finally {
                 set({ isLoading: false })
@@ -44,7 +44,7 @@ export const useFieldConfigStore = create(
 
             try {
                 console.log('Updating field:', fieldId, 'with updates:', updates)
-                const response = await fetch(`/api/field-configs/${fieldId}`, {
+                const response = await fetch(`/api/field-configs/scrum-board/${fieldId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ export const useFieldConfigStore = create(
                     .map((field, index) => ({ id: field.id, order: index }))
                 
                 if (fieldOrders.length > 0) {
-                    await fetch('/api/field-configs/reorder', {
+                    await fetch('/api/field-configs/scrum-board/reorder', {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ export const useFieldConfigStore = create(
         
         addField: async (fieldData) => {
             try {
-                const response = await fetch('/api/field-configs', {
+                const response = await fetch('/api/field-configs/scrum-board', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -156,7 +156,7 @@ export const useFieldConfigStore = create(
             }
 
             try {
-                const response = await fetch(`/api/field-configs/${fieldId}`, {
+                const response = await fetch(`/api/field-configs/scrum-board/${fieldId}`, {
                     method: 'DELETE',
                 })
 

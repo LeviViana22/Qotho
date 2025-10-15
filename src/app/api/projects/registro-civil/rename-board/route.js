@@ -41,10 +41,7 @@ export async function PUT(request) {
         // Update board color entry
         const boardColor = await prisma.boardColor.findUnique({
             where: {
-                boardName_projectType: {
-                    boardName: oldBoardName,
-                    projectType: 'registro-civil'
-                }
+                boardName: oldBoardName
             }
         })
 
@@ -52,10 +49,7 @@ export async function PUT(request) {
             // Delete old color entry
             await prisma.boardColor.delete({
                 where: {
-                    boardName_projectType: {
-                        boardName: oldBoardName,
-                        projectType: 'registro-civil'
-                    }
+                    boardName: oldBoardName
                 }
             })
 

@@ -10,12 +10,24 @@ const getFileType = (type) => {
             return 'PPT'
         case 'figma':
             return 'Figma'
+        case 'jpeg':
         case 'image/jpeg':
             return 'JPEG'
+        case 'png':
+        case 'image/png':
+            return 'PNG'
+        case 'gif':
+        case 'image/gif':
+            return 'GIF'
+        case 'webp':
+        case 'image/webp':
+            return 'WEBP'
         case 'directory':
             return 'Folder'
+        case 'unknown':
+            return 'File'
         default:
-            return <></>
+            return type.toUpperCase() || 'File'
     }
 }
 

@@ -19,14 +19,41 @@ const UploadFile = () => {
     }
 
     const handleUpload = async () => {
+        if (uploadedFiles.length === 0) return
+        
         setIsUploading(true)
-        await sleep(500)
-        handleUploadDialogClose()
-        setIsUploading(false)
-        toast.push(
-            <Notification title={'Successfully uploaded'} type="success" />,
-            { placement: 'top-center' },
-        )
+        try {
+            const formData = new FormData()
+            uploadedFiles.forEach((file) => {
+                formData.append('file', file)
+            })
+            
+            const response = await fetch('/api/files/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            
+            if (response.ok) {
+                handleUploadDialogClose()
+                setUploadedFiles([])
+                toast.push(
+                    <Notification title={'Successfully uploaded'} type="success" />,
+                    { placement: 'top-center' },
+                )
+                // Refresh the file list
+                window.location.reload()
+            } else {
+                throw new Error('Upload failed')
+            }
+        } catch (error) {
+            console.error('Upload error:', error)
+            toast.push(
+                <Notification title={'Upload failed'} type="danger" />,
+                { placement: 'top-center' },
+            )
+        } finally {
+            setIsUploading(false)
+        }
     }
 
     return (

@@ -1,61 +1,45 @@
 import { NextResponse } from 'next/server'
-import { fileListData } from '@/mock/data/filesData'
+import { auth } from '@/auth'
+import GoogleDriveService from '@/services/GoogleDriveService'
 
 export async function GET(request) {
-    const searchParams = request.nextUrl.searchParams
-    const id = searchParams.get('id')
-
-    const directoryList = fileListData.filter(
-        (file) => file.fileType === 'directory',
-    )
-    const directoryIdList = directoryList.map((directory) => directory.id)
-
     try {
-        let list = fileListData
-        let filesIncluded = []
-        let directory = []
-
-        if (directoryList.some((directory) => directory.id === id)) {
-            switch (id) {
-                case '6':
-                    filesIncluded = ['2', '7', '8', '9', '15', '16']
-                    break
-                case '12':
-                    filesIncluded = ['1', '2', '5']
-                    break
-                case '18':
-                    filesIncluded = ['11', '13', '7', '4']
-                    break
-                case '19':
-                    filesIncluded = ['15', '17', '3', '8', '7']
-                    break
-                case '20':
-                    filesIncluded = ['3', '4', '10', '14']
-                    break
-                default:
-                    break
-            }
+        const session = await auth()
+        
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        if (filesIncluded.length > 0) {
-            list = fileListData.filter((file) =>
-                filesIncluded.includes(file.id),
-            )
-            const dir = fileListData.find((file) => file.id === id)
+        const searchParams = request.nextUrl.searchParams
+        const parentId = searchParams.get('id') || 'root'
 
-            if (dir && directoryIdList.includes(id)) {
-                directory = [{ id: dir.id, label: dir.name }]
-            }
+        // Get access token from storage
+        const { getGoogleDriveToken } = await import('@/lib/googleDriveTokens')
+        const tokens = getGoogleDriveToken(session.user?.id)
+        const accessToken = tokens?.access_token
+        
+        if (!accessToken) {
+            return NextResponse.json({ error: 'No Google Drive access token' }, { status: 401 })
         }
+
+        GoogleDriveService.setAccessToken(accessToken)
+
+        // Get files from Google Drive
+        const files = await GoogleDriveService.getFiles(parentId)
+        
+        // Get folder hierarchy for breadcrumb navigation
+        const directory = parentId !== 'root' 
+            ? await GoogleDriveService.getFolderHierarchy(parentId)
+            : []
 
         const resp = {
-            list,
+            list: files,
             directory: directory,
         }
 
         return NextResponse.json(resp)
     } catch (error) {
-        console.log(error)
-        return NextResponse.json({ error: error }, { status: 500 })
+        console.error('Error fetching files:', error)
+        return NextResponse.json({ error: 'Failed to fetch files' }, { status: 500 })
     }
 }

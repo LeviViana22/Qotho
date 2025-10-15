@@ -53,6 +53,29 @@ export async function GET() {
                 createdAt: project.createdAt,
                 updatedAt: project.updatedAt
             }
+
+            // Add dynamic fields from fieldConfiguration
+            if (transformedProject.fieldConfiguration) {
+                try {
+                    // Validate that fieldConfiguration is a proper object
+                    if (typeof transformedProject.fieldConfiguration === 'object' && 
+                        transformedProject.fieldConfiguration !== null &&
+                        !Array.isArray(transformedProject.fieldConfiguration)) {
+                        
+                        const keys = Object.keys(transformedProject.fieldConfiguration)
+                        if (keys.length > 0 && keys.length < 1000) { // Reasonable limit to prevent issues
+                            keys.forEach(key => {
+                                if (key && typeof key === 'string' && key.length < 100) { // Validate key
+                                    transformedProject[key] = transformedProject.fieldConfiguration[key]
+                                }
+                            })
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error processing fieldConfiguration:', error)
+                    // Continue without adding dynamic fields if there's an error
+                }
+            }
             
             boards[boardName].push(transformedProject)
         })
@@ -75,10 +98,14 @@ export async function GET() {
             sortedBoards.push('Novo Processo')
         }
 
-        return Response.json({
+        const result = {
             boards,
             boardOrder: sortedBoards
-        })
+        }
+        
+        console.log('API returning data:', JSON.stringify(result, null, 2))
+        
+        return Response.json(result)
     } catch (error) {
         console.error('Error fetching registro civil data:', error)
         return Response.json(

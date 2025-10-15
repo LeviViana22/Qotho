@@ -14,7 +14,6 @@ import reoderArray from '@/utils/reoderArray'
 import { Droppable, DragDropContext } from '@hello-pangea/dnd'
 import { TbChevronLeft, TbChevronRight } from 'react-icons/tb'
 
-const TicketContent = lazy(() => import('./TicketContent'))
 const AddNewTicketContent = lazy(() => import('./AddNewTicketContent'))
 const AddNewMemberContent = lazy(() => import('./AddNewMemberContent'))
 const AddNewColumnContent = lazy(() => import('./AddNewColumnContent'))
@@ -557,8 +556,8 @@ const Board = (props) => {
             </AdaptiveCard>
             <Dialog
                 isOpen={dialogOpen}
-                width={dialogView === 'TICKET' || dialogView === 'NEW_TICKET' ? 700 : 520}
-                closable={dialogView !== 'TICKET'}
+                width={dialogView === 'NEW_TICKET' ? 700 : 520}
+                closable={true}
                 onClose={onDialogClose}
                 onRequestClose={onDialogClose}
             >
@@ -569,13 +568,6 @@ const Board = (props) => {
                         </div>
                     }
                 >
-                    {dialogView === 'TICKET' && (
-                        <TicketContent 
-                            onTicketClose={onDialogClose} 
-                            scrumBoardUpdateColumns={updateColumns}
-                            tasksUpdateColumns={tasksStore.updateColumns}
-                        />
-                    )}
                     {dialogView === 'NEW_TICKET' && <AddNewTicketContent />}
                     {dialogView === 'NEW_COLUMN' && <AddNewColumnContent />}
                     {dialogView === 'ADD_MEMBER' && <AddNewMemberContent />}

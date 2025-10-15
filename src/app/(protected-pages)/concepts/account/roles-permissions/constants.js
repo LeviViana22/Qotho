@@ -2,19 +2,11 @@ export const accessModules = [
     {
         id: 'users',
         name: 'Gestão de usuários',
-        description: 'Acessar, editar e excluir usuários',
+        description: 'Acessar e editar usuários',
         accessor: [
             {
-                label: 'Ler',
-                value: 'read',
-            },
-            {
-                label: 'Escrever',
-                value: 'write',
-            },
-            {
-                label: 'Excluir',
-                value: 'delete',
+                label: 'Acesso completo',
+                value: 'edit',
             },
         ],
     },

@@ -7,14 +7,13 @@ import reorderDragable from '@/utils/reorderDragable'
 import BoardColumn from './BoardColumn'
 import RegistroCivilHeader from './RegistroCivilHeader'
 import { useRegistroCivilStore } from '../_store/registroCivilStore'
-import { useTasksStore } from '../../tasks/_store/tasksStore'
+// Removed tasksStore import - Registro Civil is completely separate
 import useUserStore from '@/stores/userStore'
 import sleep from '@/utils/sleep'
 import reoderArray from '@/utils/reoderArray'
 import { Droppable, DragDropContext } from '@hello-pangea/dnd'
 import { TbChevronLeft, TbChevronRight } from 'react-icons/tb'
 
-const TicketContent = lazy(() => import('./TicketContent'))
 const AddNewTicketContent = lazy(() => import('./AddNewTicketContent'))
 const AddNewMemberContent = lazy(() => import('./AddNewMemberContent'))
 const AddNewColumnContent = lazy(() => import('./AddNewColumnContent'))
@@ -45,7 +44,7 @@ const Board = (props) => {
         isLoading
     } = useRegistroCivilStore()
 
-    const tasksStore = useTasksStore()
+    // Removed tasksStore - Registro Civil is completely separate
 
     const {
         containerHeight,
@@ -62,52 +61,7 @@ const Board = (props) => {
     const scrollContainerRef = useRef(null)
 
 
-    // Atualizar diretamente o tasksStore quando o registroCivilStore muda
-    // Usamos um ref para evitar atualizações desnecessárias
-    const prevValuesRef = useRef({
-        columns: {},
-        ordered: [],
-        finalizedColumns: {},
-        finalizedOrdered: [],
-        currentView: '',
-        searchQuery: ''
-    })
-    
-    useEffect(() => {
-        // Verificar se os valores realmente mudaram para evitar atualizações desnecessárias
-        if (!tasksStore) return;
-        
-        const prevValues = prevValuesRef.current;
-        const columnsChanged = JSON.stringify(prevValues.columns) !== JSON.stringify(columns);
-        const orderedChanged = JSON.stringify(prevValues.ordered) !== JSON.stringify(ordered);
-        const finalizedColumnsChanged = JSON.stringify(prevValues.finalizedColumns) !== JSON.stringify(finalizedColumns);
-        const finalizedOrderedChanged = JSON.stringify(prevValues.finalizedOrdered) !== JSON.stringify(finalizedOrdered);
-        const currentViewChanged = prevValues.currentView !== currentView;
-        const searchQueryChanged = prevValues.searchQuery !== searchQuery;
-        
-        const hasChanges = columnsChanged || orderedChanged || finalizedColumnsChanged || 
-                          finalizedOrderedChanged || currentViewChanged || searchQueryChanged;
-        
-        if (hasChanges) {
-            // Atualizar diretamente o tasksStore apenas se algo mudou
-            if (columnsChanged) tasksStore.updateColumns(columns);
-            if (orderedChanged) tasksStore.updateOrdered(ordered);
-            if (finalizedColumnsChanged) tasksStore.updateFinalizedColumns(finalizedColumns);
-            if (finalizedOrderedChanged) tasksStore.updateFinalizedOrdered(finalizedOrdered);
-            if (currentViewChanged) tasksStore.setCurrentView(currentView);
-            if (searchQueryChanged) tasksStore.setSearchQuery(searchQuery);
-            
-            // Atualizar os valores de referência
-            prevValuesRef.current = {
-                columns,
-                ordered,
-                finalizedColumns,
-                finalizedOrdered,
-                currentView,
-                searchQuery
-            }
-        }
-    }, [columns, ordered, finalizedColumns, finalizedOrdered, currentView, searchQuery, tasksStore])
+    // Removed tasksStore sync - Registro Civil is completely separate
 
 
     const onDialogClose = async () => {
@@ -558,8 +512,8 @@ const Board = (props) => {
             </AdaptiveCard>
             <Dialog
                 isOpen={dialogOpen}
-                width={dialogView === 'TICKET' || dialogView === 'NEW_TICKET' ? 700 : 520}
-                closable={dialogView !== 'TICKET'}
+                width={dialogView === 'NEW_TICKET' ? 700 : 520}
+                closable={true}
                 onClose={onDialogClose}
                 onRequestClose={onDialogClose}
             >
@@ -570,13 +524,6 @@ const Board = (props) => {
                         </div>
                     }
                 >
-                    {dialogView === 'TICKET' && (
-                        <TicketContent 
-                            onTicketClose={onDialogClose} 
-                            scrumBoardUpdateColumns={updateColumns}
-                            tasksUpdateColumns={tasksStore.updateColumns}
-                        />
-                    )}
                     {dialogView === 'NEW_TICKET' && <AddNewTicketContent />}
                     {dialogView === 'NEW_COLUMN' && <AddNewColumnContent />}
                     {dialogView === 'ADD_MEMBER' && <AddNewMemberContent />}

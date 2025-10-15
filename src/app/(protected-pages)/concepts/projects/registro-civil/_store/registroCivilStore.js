@@ -168,26 +168,7 @@ export const useRegistroCivilStore = create((set, get) => ({
             }
         })
     },
-    // Synchronize with tasks store
-    syncWithTasks: (getTasksState) => {
-        const tasksState = getTasksState()
-        set({
-            columns: tasksState.columns,
-            ordered: tasksState.ordered,
-            finalizedColumns: tasksState.finalizedColumns,
-            finalizedOrdered: tasksState.finalizedOrdered,
-            boardMembers: tasksState.boardMembers,
-            allMembers: tasksState.allMembers,
-            currentView: tasksState.currentView,
-            searchQuery: tasksState.searchQuery,
-        })
-    },
-    // Update tasks store with registro civil store data - versão direta sem setState
-    updateTasks: () => {
-        // Não podemos usar setTasksState diretamente
-        // Esta função agora é um stub para compatibilidade
-        // updateTasks called, but cannot update directly
-    },
+    // Removed syncWithTasks and updateTasks - Registro Civil is completely separate
     
     // Load board members from database
     loadBoardMembers: async () => {

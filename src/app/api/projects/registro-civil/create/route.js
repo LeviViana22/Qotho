@@ -27,7 +27,7 @@ export async function POST(request) {
             )
         }
 
-        // Prepare data for database insertion - don't spread projectData directly
+        // Prepare data for database insertion - include dynamic fields
         const dbProjectData = {
             id: projectData.id,
             projectId: projectData.projectId || projectData.id,
@@ -49,6 +49,39 @@ export async function POST(request) {
             createdAt: projectData.createdAt ? new Date(projectData.createdAt) : new Date(),
             updatedAt: new Date()
         }
+
+        // Handle dynamic fields by storing them in fieldConfiguration
+        const knownFields = [
+            'id', 'projectId', 'name', 'description', 'status', 'boardOrder',
+            'members', 'labels', 'attachments', 'comments', 'activity',
+            'dueDate', 'assignedTo', 'label', 'pendingItems', 'fieldConfiguration',
+            'projectType', 'createdAt', 'updatedAt'
+        ]
+
+        // Collect dynamic fields and merge them with fieldConfiguration
+        const dynamicFields = {}
+        Object.keys(projectData).forEach(key => {
+            if (!knownFields.includes(key) && projectData[key] !== undefined) {
+                dynamicFields[key] = projectData[key]
+            }
+        })
+
+        // Merge dynamic fields with existing fieldConfiguration
+        let fieldConfiguration = {}
+        if (projectData.fieldConfiguration) {
+            try {
+                fieldConfiguration = typeof projectData.fieldConfiguration === 'string' 
+                    ? JSON.parse(projectData.fieldConfiguration) 
+                    : projectData.fieldConfiguration
+            } catch (error) {
+                console.error('Error parsing fieldConfiguration:', error)
+                fieldConfiguration = {}
+            }
+        }
+
+        // Merge dynamic fields into fieldConfiguration
+        const mergedFieldConfiguration = { ...fieldConfiguration, ...dynamicFields }
+        dbProjectData.fieldConfiguration = JSON.stringify(mergedFieldConfiguration)
 
         console.log('Creating project with db data:', JSON.stringify(dbProjectData, null, 2))
 

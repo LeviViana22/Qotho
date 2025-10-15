@@ -21,7 +21,7 @@ const getRolesPermissionsRoles = async () => {
             description: 'Acesso total a todas as funcionalidades e configurações. Pode gerenciar usuários, funções e configurações.',
             users: mappedUsers.filter((user) => user.role === 'admin'),
             accessRight: {
-                users: ['write', 'read', 'delete'],
+                users: ['edit'],
                 products: ['write', 'read', 'delete'],
                 configurations: ['write', 'read', 'delete'],
                 files: ['write', 'read', 'delete'],
@@ -34,7 +34,7 @@ const getRolesPermissionsRoles = async () => {
             description: 'Acesso a funcionalidades básicas necessárias para tarefas. Privilégios administrativos limitados.',
             users: mappedUsers.filter((user) => user.role === 'user'),
             accessRight: {
-                users: ['read'],
+                users: [],
                 products: ['write', 'read'],
                 configurations: ['read'],
                 files: ['write', 'read'],

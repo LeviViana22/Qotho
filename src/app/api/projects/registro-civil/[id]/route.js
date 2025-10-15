@@ -40,7 +40,7 @@ export async function GET(request, { params }) {
             updatedAt: project.updatedAt
         }
 
-        // Add dynamic fields from fieldConfiguration to the response
+        // Add dynamic fields from fieldConfiguration
         if (transformedProject.fieldConfiguration) {
             try {
                 // Validate that fieldConfiguration is a proper object
@@ -77,6 +77,12 @@ export async function PUT(request, { params }) {
     try {
         const { id } = await params
         const updateData = await request.json()
+        
+        console.log('API PUT received:', {
+            id: id,
+            updateData: updateData,
+            fieldConfiguration: updateData.fieldConfiguration
+        })
 
         // Get current project to compare changes
         const currentProject = await prisma.project.findUnique({
@@ -109,6 +115,36 @@ export async function PUT(request, { params }) {
             updatedAt: new Date()
         }
 
+        // Handle dynamic fields by storing them in fieldConfiguration
+        const knownFields = [
+            'id', 'projectId', 'name', 'description', 'status', 'boardOrder',
+            'members', 'labels', 'attachments', 'comments', 'activity',
+            'dueDate', 'assignedTo', 'label', 'pendingItems', 'fieldConfiguration',
+            'projectType', 'createdAt', 'updatedAt'
+        ]
+
+        // The frontend already sends the complete fieldConfiguration with all dynamic fields
+        // Just use the fieldConfiguration as-is, no need to merge with existing data
+        if (updateData.fieldConfiguration) {
+            try {
+                // Validate that fieldConfiguration is a proper object
+                const fieldConfig = typeof updateData.fieldConfiguration === 'string' 
+                    ? JSON.parse(updateData.fieldConfiguration) 
+                    : updateData.fieldConfiguration
+                
+                if (typeof fieldConfig === 'object' && fieldConfig !== null && !Array.isArray(fieldConfig)) {
+                    dbUpdateData.fieldConfiguration = JSON.stringify(fieldConfig)
+                } else {
+                    console.error('Invalid fieldConfiguration format:', fieldConfig)
+                    dbUpdateData.fieldConfiguration = JSON.stringify({})
+                }
+            } catch (error) {
+                console.error('Error parsing fieldConfiguration:', error)
+                dbUpdateData.fieldConfiguration = JSON.stringify({})
+            }
+        } else {
+            dbUpdateData.fieldConfiguration = JSON.stringify({})
+        }
 
         // Update the project
         let updatedProject
@@ -148,7 +184,7 @@ export async function PUT(request, { params }) {
             updatedAt: updatedProject.updatedAt
         }
 
-        // Add dynamic fields from fieldConfiguration to the response
+        // Add dynamic fields from fieldConfiguration
         if (transformedProject.fieldConfiguration) {
             try {
                 // Validate that fieldConfiguration is a proper object
@@ -201,4 +237,3 @@ export async function DELETE(request, { params }) {
         )
     }
 }
-

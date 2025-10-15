@@ -193,11 +193,56 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
         return null
     }
 
-    // Initialize local state when project data changes
+    // Initialize local state when project data changes - but preserve existing local changes
     useEffect(() => {
         if (projectData && Object.keys(projectData).length > 0) {
             const convertedData = convertDateStringsToObjects(projectData)
-            setLocalIssueData(convertedData)
+            
+            setLocalIssueData(prevData => {
+                // If we don't have previous data, use the new data
+                if (!prevData || !prevData.id) {
+                    return convertedData
+                }
+                
+                // If we have local data, merge new data with local changes
+                // Preserve any local field changes that haven't been saved yet
+                const mergedData = { ...convertedData }
+                
+                // Preserve local dynamic field values that might be newer
+                // Check both direct properties and fieldConfiguration
+                Object.keys(prevData).forEach(key => {
+                    if (!['id', 'projectId', 'name', 'description', 'status', 'boardOrder',
+                          'members', 'labels', 'attachments', 'comments', 'activity',
+                          'dueDate', 'assignedTo', 'label', 'pendingItems', 'fieldConfiguration',
+                          'createdAt', 'updatedAt'].includes(key)) {
+                        // This is a dynamic field - preserve local value if it exists and is not empty
+                        if (prevData[key] !== undefined && prevData[key] !== null && prevData[key] !== '') {
+                            mergedData[key] = prevData[key]
+                        }
+                    }
+                })
+                
+                // Also preserve any local changes that might be in the fieldConfiguration
+                if (prevData.fieldConfiguration && typeof prevData.fieldConfiguration === 'string') {
+                    try {
+                        const localFieldConfig = JSON.parse(prevData.fieldConfiguration)
+                        Object.keys(localFieldConfig).forEach(key => {
+                            // Only preserve if the local value is not empty and different from new data
+                            if (localFieldConfig[key] !== undefined && 
+                                localFieldConfig[key] !== null && 
+                                localFieldConfig[key] !== '' &&
+                                localFieldConfig[key] !== convertedData[key]) {
+                                mergedData[key] = localFieldConfig[key]
+                            }
+                        })
+                    } catch (error) {
+                        console.log('Error parsing local fieldConfiguration:', error)
+                    }
+                }
+                
+                return mergedData
+            })
+            
             setLocalComments(convertedData.comments || [])
             setLocalAttachments(convertedData.attachments || [])
         }
@@ -217,14 +262,16 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
             }
         })
         
-        // Convert dynamic field configuration dates and merge with main data
+        // Convert dynamic field dates - only convert date fields, don't overwrite existing values
         if (convertedData.fieldConfiguration) {
             try {
                 const fieldConfig = JSON.parse(convertedData.fieldConfiguration)
                 Object.keys(fieldConfig).forEach(key => {
-                    // Don't convert dynamic fields to Date objects here - let the UI components handle it
-                    // Just merge dynamic fields into the main data object for easy access
-                    convertedData[key] = fieldConfig[key]
+                    // Only set the field if it doesn't already exist in the main data
+                    // This prevents overwriting values that were already merged by the API
+                    if (!(key in convertedData)) {
+                        convertedData[key] = fieldConfig[key]
+                    }
                 })
             } catch (error) {
                 console.log('Error parsing fieldConfiguration:', error)
@@ -234,7 +281,7 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
         return convertedData
     }
 
-    // Fetch fresh data from database when drawer opens
+    // Fetch fresh data from database when drawer opens - but preserve local changes
     useEffect(() => {
         if (isOpen && projectData?.id) {
             const fetchFreshData = async () => {
@@ -243,7 +290,53 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
                     if (response.ok) {
                         const freshData = await response.json()
                         const convertedData = convertDateStringsToObjects(freshData)
-                        setLocalIssueData(convertedData)
+                        
+                        // Only update if we don't have local changes or if this is the first load
+                        setLocalIssueData(prevData => {
+                            // If we don't have previous data, use fresh data
+                            if (!prevData || !prevData.id) {
+                                return convertedData
+                            }
+                            
+                            // If we have local data, merge fresh data with local changes
+                            // Preserve any local field changes that haven't been saved yet
+                            const mergedData = { ...convertedData }
+                            
+                            // Preserve local dynamic field values that might be newer
+                            // Check both direct properties and fieldConfiguration
+                            Object.keys(prevData).forEach(key => {
+                                if (!['id', 'projectId', 'name', 'description', 'status', 'boardOrder',
+                                      'members', 'labels', 'attachments', 'comments', 'activity',
+                                      'dueDate', 'assignedTo', 'label', 'pendingItems', 'fieldConfiguration',
+                                      'createdAt', 'updatedAt'].includes(key)) {
+                                    // This is a dynamic field - preserve local value if it exists and is not empty
+                                    if (prevData[key] !== undefined && prevData[key] !== null && prevData[key] !== '') {
+                                        mergedData[key] = prevData[key]
+                                    }
+                                }
+                            })
+                            
+                            // Also preserve any local changes that might be in the fieldConfiguration
+                            if (prevData.fieldConfiguration && typeof prevData.fieldConfiguration === 'string') {
+                                try {
+                                    const localFieldConfig = JSON.parse(prevData.fieldConfiguration)
+                                    Object.keys(localFieldConfig).forEach(key => {
+                                        // Only preserve if the local value is not empty and different from fresh data
+                                        if (localFieldConfig[key] !== undefined && 
+                                            localFieldConfig[key] !== null && 
+                                            localFieldConfig[key] !== '' &&
+                                            localFieldConfig[key] !== convertedData[key]) {
+                                            mergedData[key] = localFieldConfig[key]
+                                        }
+                                    })
+                                } catch (error) {
+                                    console.log('Error parsing local fieldConfiguration:', error)
+                                }
+                            }
+                            
+                            return mergedData
+                        })
+                        
                         setLocalComments(convertedData.comments || [])
                         setLocalAttachments(convertedData.attachments || [])
                     }
@@ -256,12 +349,15 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
         }
     }, [isOpen, projectData?.id])
 
-    // Sync title input value with local state (only when projectData changes)
+    // Sync title input value with local state when projectData changes
     useEffect(() => {
-        const titleValue = localIssueData?.name || localIssueData?.title || ''
-        setTitleInputValue(titleValue)
-        setOriginalTitleValue(titleValue)
-    }, [projectData])
+        if (projectData && Object.keys(projectData).length > 0) {
+            const titleValue = projectData?.name || projectData?.title || ''
+            const upperTitleValue = titleValue.toUpperCase()
+            setTitleInputValue(upperTitleValue)
+            setOriginalTitleValue(upperTitleValue)
+        }
+    }, [projectData?.id]) // Use projectData.id to ensure it updates when switching projects
 
     // Cleanup timeout on unmount
     useEffect(() => {
@@ -271,6 +367,20 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
             }
         }
     }, [titleChangeTimeout])
+
+    // Reset title state when drawer closes
+    useEffect(() => {
+        if (!isOpen) {
+            setTitleInputValue('')
+            setOriginalTitleValue('')
+            setIsTitleFocused(false)
+            setFocusedField(null)
+            setOriginalFieldValues({})
+            setNewPendingItem('')
+            setEditingCommentId(null)
+            setEditingCommentText('')
+        }
+    }, [isOpen])
 
 
     const createUID = (length) => {
@@ -293,9 +403,12 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
         Object.keys(data).forEach(key => {
             if (knownFields.includes(key)) {
                 dbData[key] = data[key]
-            } else {
+            } else if (key !== 'fieldConfiguration') {
                 // This is a dynamic field, add to fieldConfiguration
-                fieldConfiguration[key] = data[key]
+                // Only include non-empty values to avoid overwriting with empty values
+                if (data[key] !== undefined && data[key] !== null && data[key] !== '') {
+                    fieldConfiguration[key] = data[key]
+                }
             }
         })
         
@@ -308,6 +421,12 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
     const saveToDatabase = async (updatedData) => {
         try {
             const formattedData = formatDataForDatabase(updatedData)
+            console.log('Saving to database:', {
+                projectId: localIssueData.id,
+                formattedData: formattedData,
+                fieldConfiguration: formattedData.fieldConfiguration
+            })
+            
             const response = await fetch(`/api/projects/registro-civil/${localIssueData.id}`, {
                 method: 'PUT',
                 headers: {
@@ -317,8 +436,39 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
             })
             
             if (!response.ok) {
+                const errorText = await response.text()
+                console.error('Database save failed:', response.status, errorText)
                 throw new Error('Failed to save to database')
             }
+            
+            console.log('Database save successful')
+            
+            // Update UI stores after successful save
+            const updatedColumns = { ...columns }
+            const updatedFinalizedColumns = { ...finalizedColumns }
+            
+            // Find and update the project in regular columns
+            for (const boardName in updatedColumns) {
+                const board = updatedColumns[boardName]
+                const projectIndex = board.findIndex(project => project.id === localIssueData.id)
+                if (projectIndex !== -1) {
+                    updatedColumns[boardName][projectIndex] = updatedData
+                    updateColumns(updatedColumns)
+                    break
+                }
+            }
+            
+            // Find and update the project in finalized columns
+            for (const boardName in updatedFinalizedColumns) {
+                const board = updatedFinalizedColumns[boardName]
+                const projectIndex = board.findIndex(project => project.id === localIssueData.id)
+                if (projectIndex !== -1) {
+                    updatedFinalizedColumns[boardName][projectIndex] = updatedData
+                    updateFinalizedColumns(updatedFinalizedColumns)
+                    break
+                }
+            }
+            
         } catch (error) {
             console.error('Error saving to database:', error)
         }
@@ -339,40 +489,9 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
         // Update local state immediately for UI response
         setLocalIssueData(updatedData)
         
-        // Update UI stores immediately
-        const updatedColumns = { ...columns }
-        const updatedFinalizedColumns = { ...finalizedColumns }
-        
-        // Find and update the project in regular columns
-        for (const boardName in updatedColumns) {
-            const board = updatedColumns[boardName]
-            const projectIndex = board.findIndex(project => project.id === localIssueData.id)
-            if (projectIndex !== -1) {
-                updatedColumns[boardName][projectIndex] = updatedData
-                updateColumns(updatedColumns)
-                break
-            }
-        }
-        
-        // Find and update the project in finalized columns
-        for (const boardName in updatedFinalizedColumns) {
-            const board = updatedFinalizedColumns[boardName]
-            const projectIndex = board.findIndex(project => project.id === localIssueData.id)
-            if (projectIndex !== -1) {
-                updatedFinalizedColumns[boardName][projectIndex] = updatedData
-                updateFinalizedColumns(updatedFinalizedColumns)
-                break
-            }
-        }
-        
-        // Debounce the save to prevent too many rapid saves
-        if (window[`save${fieldName}Timeout`]) {
-            clearTimeout(window[`save${fieldName}Timeout`]);
-        }
-        window[`save${fieldName}Timeout`] = setTimeout(() => {
-            // Save to database
-            saveToDatabase(updatedData)
-        }, 500); // Wait 500ms before saving
+        // Save immediately to database without debouncing for dynamic fields
+        // This ensures the data is saved before any potential page reload
+        saveToDatabase(updatedData)
     }
 
     // Handle field focus to store original value
@@ -396,6 +515,7 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
         
         // Only log if the value actually changed from the original
         if (oldValue !== newValue) {
+            console.log(`${fieldName} activity logging:`, { oldValue, newValue });
             
             // Convert values for activity logging
             const formatValueForActivity = (value, fieldName) => {
@@ -461,8 +581,8 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
             // Save to database with activity
             saveToDatabase(updatedDataWithActivity)
         } else {
-            // Even if no change, still save the current state to database
-            saveToDatabase(localIssueData)
+            // No change detected, no need to save to database
+            // This prevents unnecessary database calls that cause lag
         }
     }
 
@@ -634,7 +754,7 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
             const updatedData = { ...localIssueData, ...newData }
             setLocalIssueData(updatedData)
             
-            // Update the project in the scrum board columns (Zustand store)
+            // Update the project in the registro civil columns (Zustand store)
             const updatedColumns = { ...columns }
             const updatedFinalizedColumns = { ...finalizedColumns }
             
@@ -1085,10 +1205,10 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
             }
             
             // Debounce the save to prevent too many rapid saves
-            if (window.projectAtendenteTimeout) {
-                clearTimeout(window.projectAtendenteTimeout)
+            if (window.registroCivilSaveTimeout) {
+                clearTimeout(window.registroCivilSaveTimeout)
             }
-            window.projectAtendenteTimeout = setTimeout(async () => {
+            window.registroCivilSaveTimeout = setTimeout(async () => {
                 try {
                     const formattedData = formatDataForDatabase(updatedIssueData)
                     
@@ -1165,10 +1285,10 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
             }
             
             // Debounce the save to prevent too many rapid saves
-            if (window.projectAtendenteTimeout) {
-                clearTimeout(window.projectAtendenteTimeout)
+            if (window.registroCivilSaveTimeout) {
+                clearTimeout(window.registroCivilSaveTimeout)
             }
-            window.projectAtendenteTimeout = setTimeout(async () => {
+            window.registroCivilSaveTimeout = setTimeout(async () => {
                 try {
                     const formattedData = formatDataForDatabase(updatedIssueData)
                     
@@ -1415,8 +1535,9 @@ const ProjectDetailsDrawer = ({ isOpen, onClose, projectData }) => {
                                         className="h3 font-bold outline-hidden bg-transparent"
                                         value={titleInputValue}
                                         onChange={(e) => {
-                                            setTitleInputValue(e.target.value)
-                                            handleTitleChange(e.target.value)
+                                            const upperValue = e.target.value.toUpperCase()
+                                            setTitleInputValue(upperValue)
+                                            handleTitleChange(upperValue)
                                         }}
                                         onFocus={handleTitleFocus}
                                         onBlur={(e) => handleTitleBlur(e.target.value)}

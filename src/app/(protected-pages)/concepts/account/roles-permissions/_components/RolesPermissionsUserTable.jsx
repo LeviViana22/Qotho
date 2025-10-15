@@ -41,12 +41,41 @@ const RolesPermissionsUserTable = (props) => {
         (state) => state.setSelectAllUser,
     )
     const rolePermissionsUserList = useRolePermissionsStore((state) => state.userList)
+    const filterData = useRolePermissionsStore((state) => state.filterData)
     
     // Get Zustand store functions and users
     const { updateUser, getAllUsers, users: zustandUsers, loadUsers } = useUserStore()
     
     // Use Zustand users as the primary source, fallback to role permissions store
-    const userList = zustandUsers.length > 0 ? zustandUsers : rolePermissionsUserList
+    const allUsers = zustandUsers.length > 0 ? zustandUsers : rolePermissionsUserList
+    
+    // Filter users based on filterData
+    const userList = useMemo(() => {
+        let filtered = allUsers
+        
+        // Filter by status
+        if (filterData.status) {
+            filtered = filtered.filter(user => user.status === filterData.status)
+        }
+        
+        // Filter by role
+        if (filterData.role) {
+            filtered = filtered.filter(user => user.role === filterData.role)
+        }
+        
+        // Filter by search query
+        if (filterData.query) {
+            const query = filterData.query.toLowerCase()
+            filtered = filtered.filter(user => 
+                user.name?.toLowerCase().includes(query) ||
+                user.email?.toLowerCase().includes(query) ||
+                user.firstName?.toLowerCase().includes(query) ||
+                user.lastName?.toLowerCase().includes(query)
+            )
+        }
+        
+        return filtered
+    }, [allUsers, filterData.status, filterData.role, filterData.query])
 
     const { onAppendQueryParams } = useAppendQueryParams()
 

@@ -27,7 +27,25 @@ const RolesPermissionsProvider = ({
     const isHydrated = useUserStoreHydrated()
 
     useEffect(() => {
-        setRoleList(roleList)
+        // Load custom roles and role modifications from localStorage
+        let mergedRoleList = [...roleList]
+        if (typeof window !== 'undefined') {
+            const customRoles = JSON.parse(localStorage.getItem('customRoles') || '[]')
+            const roleModifications = JSON.parse(localStorage.getItem('roleModifications') || '{}')
+            
+            // Apply role modifications to existing roles
+            mergedRoleList = mergedRoleList.map(role => {
+                if (roleModifications[role.id]) {
+                    return roleModifications[role.id]
+                }
+                return role
+            })
+            
+            // Add custom roles
+            mergedRoleList = [...mergedRoleList, ...customRoles]
+        }
+        
+        setRoleList(mergedRoleList)
         
         // Always use Zustand users if available, otherwise use server data
         if (zustandUsers.length > 0) {

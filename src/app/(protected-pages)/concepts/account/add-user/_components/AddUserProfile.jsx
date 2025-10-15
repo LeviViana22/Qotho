@@ -220,26 +220,13 @@ const AddUserProfile = () => {
                 }
             }
             
-            // Get password from security form store
-            const formData = getFormData()
-            const securityData = formData.security || {}
-            const password = securityData.password
-            
-            if (!password) {
-                toast.push(
-                    <Notification type="danger">Por favor, defina uma senha na aba Segurança primeiro.</Notification>,
-                    { placement: 'top-center' }
-                )
-                return
-            }
-            
             // Create new user data
             const newUserData = {
                 firstName: values.firstName,
                 lastName: values.lastName,
                 name: `${values.firstName} ${values.lastName}`,
                 email: values.email,
-                password: password, // Password from security form store
+                password: values.password, // Password from form values
                 img: imageToStore,
                 personalInfo: {
                     dialCode: values.dialCode,

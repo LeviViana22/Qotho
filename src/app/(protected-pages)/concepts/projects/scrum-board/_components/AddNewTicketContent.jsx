@@ -1058,11 +1058,11 @@ const AddNewTicketContent = () => {
                         break
                     case 'hora':
                     case 'time':
-                        newCard[fieldName] = value || null
+                        newCard[fieldName] = value ? value.toISOString() : null
                         break
                     case 'data e hora':
                     case 'datetime':
-                        newCard[fieldName] = value || null
+                        newCard[fieldName] = value ? value.toISOString() : null
                         break
                     default:
                         newCard[fieldName] = value || ''
@@ -1091,12 +1091,42 @@ const AddNewTicketContent = () => {
             
             // Save individual project to backend
             try {
-                const response = await fetch('/api/projects/create', {
+                // Format the data for the database (similar to registro-civil)
+                const projectData = {
+                    id: newCard.id, // Ensure id is included
+                    name: newCard.name,
+                    description: newCard.description || '',
+                    status: newCard.status,
+                    projectId: newCard.projectId || newCard.id,
+                    boardOrder: newCard.boardOrder || 0,
+                    members: JSON.stringify(newCard.members || []),
+                    labels: JSON.stringify(newCard.labels || []),
+                    attachments: JSON.stringify(newCard.attachments || []),
+                    comments: JSON.stringify(newCard.comments || []),
+                    activity: JSON.stringify(newCard.activity || []),
+                    pendingItems: JSON.stringify(newCard.pendingItems || []),
+                    fieldConfiguration: JSON.stringify(newCard.fieldConfiguration || []),
+                    dueDate: newCard.dueDate,
+                    assignedTo: newCard.assignedTo,
+                    label: newCard.label,
+                    projectType: 'scrum-board', // Set project type for scrum board projects
+                    // Add all dynamic fields
+                    ...Object.keys(newCard).reduce((acc, key) => {
+                        if (!['id', 'name', 'description', 'status', 'projectId', 'boardOrder', 'members', 'labels', 'attachments', 'comments', 'activity', 'pendingItems', 'fieldConfiguration', 'dueDate', 'assignedTo', 'label', 'createdAt'].includes(key)) {
+                            acc[key] = newCard[key]
+                        }
+                        return acc
+                    }, {})
+                }
+
+                console.log('Creating project with data:', projectData)
+                
+                const response = await fetch('/api/projects/scrum-board/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(newCard),
+                    body: JSON.stringify(projectData),
                 });
                 
                 if (!response.ok) {
