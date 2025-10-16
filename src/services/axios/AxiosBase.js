@@ -4,7 +4,7 @@ import AxiosRequestIntrceptorConfigCallback from './AxiosRequestIntrceptorConfig
 import appConfig from '@/configs/app.config'
 
 const AxiosBase = axios.create({
-    timeout: 60000,
+    timeout: 300000, // 5 minutes to match GoogleDriveService timeout
     baseURL: appConfig.apiPrefix,
     withCredentials: true,
 })

@@ -7,12 +7,14 @@ import Upload from '@/components/ui/Upload'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import UploadMedia from '@/assets/svg/UploadMedia'
+import { useFileManagerStore } from '../_store/useFileManagerStore'
 import sleep from '@/utils/sleep'
 
 const UploadFile = () => {
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
     const [uploadedFiles, setUploadedFiles] = useState([])
+    const { openedDirectoryId } = useFileManagerStore()
 
     const handleUploadDialogClose = () => {
         setUploadDialogOpen(false)
@@ -28,27 +30,50 @@ const UploadFile = () => {
                 formData.append('file', file)
             })
             
+            // Add the current directory ID as parent
+            const parentId = openedDirectoryId || 'root'
+            formData.append('parentId', parentId)
+            
+            // Get auth header for the request
+            const { getAuthHeader } = await import('@/lib/googleDriveAuth')
+            const authHeader = getAuthHeader()
+            
+            if (!authHeader) {
+                throw new Error('No Google Drive access token available')
+            }
+            
             const response = await fetch('/api/files/upload', {
                 method: 'POST',
+                headers: {
+                    'Authorization': authHeader
+                },
                 body: formData,
             })
             
             if (response.ok) {
+                const result = await response.json()
                 handleUploadDialogClose()
                 setUploadedFiles([])
+                
+                const successMessage = result.uploaded === result.total 
+                    ? `Successfully uploaded ${result.uploaded} file${result.uploaded > 1 ? 's' : ''}`
+                    : `Uploaded ${result.uploaded} of ${result.total} files`
+                
                 toast.push(
-                    <Notification title={'Successfully uploaded'} type="success" />,
+                    <Notification title={successMessage} type="success" />,
                     { placement: 'top-center' },
                 )
                 // Refresh the file list
                 window.location.reload()
             } else {
-                throw new Error('Upload failed')
+                const errorData = await response.json().catch(() => ({}))
+                console.error('Upload failed:', response.status, errorData)
+                throw new Error(errorData.error || `Upload failed with status ${response.status}`)
             }
         } catch (error) {
             console.error('Upload error:', error)
             toast.push(
-                <Notification title={'Upload failed'} type="danger" />,
+                <Notification title={error.message || 'Upload failed'} type="danger" />,
                 { placement: 'top-center' },
             )
         } finally {
@@ -66,7 +91,7 @@ const UploadFile = () => {
                 onClose={handleUploadDialogClose}
                 onRequestClose={handleUploadDialogClose}
             >
-                <h4>Upload Files</h4>
+                <h4>Upload de arquivos</h4>
                 <Upload
                     draggable
                     className="mt-6 bg-gray-100 dark:bg-transparent"
@@ -79,12 +104,12 @@ const UploadFile = () => {
                         </div>
                         <p className="font-semibold">
                             <span className="text-gray-800 dark:text-white">
-                                Drop your files here, or{' '}
+                                Arraste e solte seus arquivos aqui, ou{' '}
                             </span>
-                            <span className="text-blue-500">browse</span>
+                            <span className="text-blue-500">navegue</span>
                         </p>
                         <p className="mt-1 font-semibold opacity-60 dark:text-white">
-                            through your machine
+                            pelo seu computador
                         </p>
                     </div>
                 </Upload>

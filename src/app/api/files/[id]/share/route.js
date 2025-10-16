@@ -10,18 +10,22 @@ export async function POST(request, { params }) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const { getGoogleDriveToken } = await import('@/lib/googleDriveTokens')
-        const tokens = getGoogleDriveToken(session.user?.id)
-        const accessToken = tokens?.access_token
-        
-        if (!accessToken) {
+        const authHeader = request.headers.get('authorization')
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return NextResponse.json({ error: 'No Google Drive access token' }, { status: 401 })
         }
+        
+        const accessToken = authHeader.replace('Bearer ', '')
 
         GoogleDriveService.setAccessToken(accessToken)
 
-        const { id } = params
+        // Await params for Next.js 15 compatibility
+        const { id } = await params
         const { email, role = 'reader' } = await request.json()
+        
+        if (!id) {
+            return NextResponse.json({ error: 'File ID is required' }, { status: 400 })
+        }
 
         if (!email) {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 })

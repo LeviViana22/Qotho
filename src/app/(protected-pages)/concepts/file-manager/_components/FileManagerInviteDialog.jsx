@@ -4,6 +4,8 @@ import { useState, useRef } from 'react'
 import Dialog from '@/components/ui/Dialog'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import InputGroup from '@/components/ui/InputGroup'
+import Select from '@/components/ui/Select'
 import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
 import { useFileManagerStore } from '../_store/useFileManagerStore'
@@ -17,6 +19,14 @@ const FileManagerInviteDialog = () => {
     const inputRef = useRef(null)
 
     const [inviting, setInviting] = useState(false)
+    const [selectedRole, setSelectedRole] = useState('reader')
+
+    // Permission role options
+    const roleOptions = [
+        { value: 'reader', label: 'Visualizador' },
+        { value: 'commenter', label: 'Comentador' },
+        { value: 'writer', label: 'Editor' }
+    ]
 
     const handleDialogClose = () => {
         setInviteDialog({ id: '', open: false })
@@ -28,25 +38,39 @@ const FileManagerInviteDialog = () => {
         
         setInviting(true)
         try {
+            // Get auth header for the request
+            const { getAuthHeader } = await import('@/lib/googleDriveAuth')
+            const authHeader = getAuthHeader()
+            
+            if (!authHeader) {
+                throw new Error('No Google Drive access token available')
+            }
+            
             const response = await fetch(`/api/files/${inviteDialog.id}/share`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': authHeader
                 },
-                body: JSON.stringify({ email, role: 'reader' }),
+                body: JSON.stringify({ email, role: selectedRole }),
             })
             
             if (response.ok) {
+                const result = await response.json()
+                console.log('File shared successfully:', result)
                 toast.push(
                     <Notification
                         type="success"
-                        title="Invitation sent!"
+                        title="File shared successfully!"
                     ></Notification>,
                     { placement: 'top-end' },
                 )
                 inputRef.current.value = ''
+                // Close the dialog after successful share
+                setInviteDialog({ id: '', open: false })
             } else {
-                throw new Error('Failed to share file')
+                const errorData = await response.json().catch(() => ({}))
+                throw new Error(errorData.error || 'Failed to share file')
             }
         } catch (error) {
             console.error('Share error:', error)
@@ -77,32 +101,24 @@ const FileManagerInviteDialog = () => {
             onClose={handleDialogClose}
             onRequestClose={handleDialogClose}
         >
-            <h4>Share this file</h4>
+            <h4>Compartilhar este arquivo</h4>
             <div className="mt-6">
-                <Input
-                    ref={inputRef}
-                    placeholder="Email"
-                    type="email"
-                    suffix={
-                        <Button
-                            type="button"
-                            variant="solid"
-                            size="sm"
-                            customColorClass={({ unclickable }) =>
-                                classNames(
-                                    'bg-gray-900 dark:bg-gray-100 dark:hover:bg-gray-200',
-                                    !unclickable
-                                        ? 'hover:bg-gray-800'
-                                        : 'hover:bg-gray-900',
-                                )
-                            }
-                            loading={inviting}
-                            onClick={handleInvite}
-                        >
-                            Invite
-                        </Button>
-                    }
-                />
+                <InputGroup>
+                    <Input
+                        ref={inputRef}
+                        placeholder="Email"
+                        type="email"
+                    />
+                    <div style={{ minWidth: 140 }}>
+                        <Select
+                            isSearchable={false}
+                            placeholder="Permissão"
+                            value={roleOptions.find(option => option.value === selectedRole)}
+                            options={roleOptions}
+                            onChange={(option) => setSelectedRole(option.value)}
+                        />
+                    </div>
+                </InputGroup>
             </div>
             <div className="mt-6 flex justify-between items-center">
                 <Button
@@ -111,10 +127,15 @@ const FileManagerInviteDialog = () => {
                     icon={<TbLink />}
                     onClick={handleCopy}
                 >
-                    Copy link
+                    Copiar link
                 </Button>
-                <Button variant="solid" size="sm" onClick={handleDialogClose}>
-                    Done
+                <Button 
+                    variant="solid" 
+                    size="sm" 
+                    loading={inviting}
+                    onClick={handleInvite}
+                >
+                    Convidar
                 </Button>
             </div>
         </Dialog>

@@ -13,14 +13,13 @@ export async function GET(request) {
         const searchParams = request.nextUrl.searchParams
         const parentId = searchParams.get('id') || 'root'
 
-        // Get access token from storage
-        const { getGoogleDriveToken } = await import('@/lib/googleDriveTokens')
-        const tokens = getGoogleDriveToken(session.user?.id)
-        const accessToken = tokens?.access_token
-        
-        if (!accessToken) {
+        // Get access token from Authorization header
+        const authHeader = request.headers.get('authorization')
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return NextResponse.json({ error: 'No Google Drive access token' }, { status: 401 })
         }
+        
+        const accessToken = authHeader.replace('Bearer ', '')
 
         GoogleDriveService.setAccessToken(accessToken)
 

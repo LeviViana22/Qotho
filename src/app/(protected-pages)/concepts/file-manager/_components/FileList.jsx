@@ -16,7 +16,16 @@ const FileList = (props) => {
         onRename,
         onOpen,
         onClick,
+        selectedFiles,
+        isMultiSelectMode,
+        onMark,
+        onDragStart,
+        onDragEnd,
+        onDrop,
     } = props
+
+    // Debug: Log the first file to see if sizeDisplay is present
+    console.log('FileList received files:', fileList.length, fileList[0])
 
     const folders = useMemo(() => {
         return fileList.filter((file) => file.fileType === 'directory')
@@ -31,15 +40,23 @@ const FileList = (props) => {
             {list.map((file) => (
                 <FileSegment
                     key={file.id}
+                    id={file.id}
                     fileType={file.fileType}
                     size={file.size}
+                    sizeDisplay={file.sizeDisplay}
                     name={file.name}
-                    onClick={() => onClick(file.id)}
-                    onDownload={onDownload}
+                    isSelected={selectedFiles.includes(file.id)}
+                    isMultiSelectMode={isMultiSelectMode}
+                    onClick={isFolder ? () => onOpen(file.id) : () => onClick(file.id)}
+                    onDownload={() => onDownload(file.id)}
                     onShare={() => onShare(file.id)}
                     onDelete={() => onDelete(file.id)}
                     onRename={() => onRename(file.id)}
-                    {...(isFolder ? { onOpen: () => onOpen(file.id) } : {})}
+                    onMark={() => onMark(file.id)}
+                    onDragStart={onDragStart}
+                    onDragEnd={onDragEnd}
+                    onDrop={onDrop}
+                    {...(isFolder ? { onDetails: () => onClick(file.id) } : {})}
                 />
             ))}
         </div>
@@ -61,13 +78,14 @@ const FileList = (props) => {
                         key={file.id}
                         fileType={file.fileType}
                         size={file.size}
+                        sizeDisplay={file.sizeDisplay}
                         name={file.name}
-                        onClick={() => onClick(file.id)}
-                        onDownload={onDownload}
+                        onClick={isFolder ? () => onOpen(file.id) : () => onClick(file.id)}
+                        onDownload={() => onDownload(file.id)}
                         onShare={() => onShare(file.id)}
                         onDelete={() => onDelete(file.id)}
                         onRename={() => onRename(file.id)}
-                        {...(isFolder ? { onOpen: () => onOpen(file.id) } : {})}
+                        {...(isFolder ? { onDetails: () => onClick(file.id) } : {})}
                     />
                 ))}
             </TBody>
@@ -78,14 +96,14 @@ const FileList = (props) => {
         <div>
             {folders.length > 0 && (
                 <div>
-                    <h4>Folders</h4>
+                    <h4>Pastas</h4>
                     {layout === 'grid' && renderFileSegment(folders, true)}
                     {layout === 'list' && renderFileRow(folders, true)}
                 </div>
             )}
             {files.length > 0 && (
                 <div className="mt-8">
-                    <h4>Files</h4>
+                    <h4>Arquivos</h4>
                     {layout === 'grid' && renderFileSegment(files)}
                     {layout === 'list' && renderFileRow(files)}
                 </div>

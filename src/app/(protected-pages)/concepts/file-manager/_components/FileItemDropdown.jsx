@@ -8,10 +8,12 @@ import {
     TbUserPlus,
     TbTrash,
     TbFolderSymlink,
+    TbInfoCircle,
+    TbCheck,
 } from 'react-icons/tb'
 
 const FileItemDropdown = (props) => {
-    const { onDelete, onShare, onRename, onDownload, onOpen } = props
+    const { onDelete, onShare, onRename, onDownload, onOpen, onDetails, onMark, isMarked } = props
 
     const dropdownRef = useRef(null)
 
@@ -31,13 +33,22 @@ const FileItemDropdown = (props) => {
             renderTitle={<EllipsisButton onClick={handleDropdownClick} />}
             placement="bottom-end"
         >
-            {onOpen && (
+            {onMark && (
                 <Dropdown.Item
-                    eventKey="Open"
-                    onClick={(e) => handleDropdownItemClick(e, onOpen)}
+                    eventKey="Mark"
+                    onClick={(e) => handleDropdownItemClick(e, onMark)}
                 >
-                    <TbFolderSymlink className="text-xl" />
-                    <span>Open</span>
+                    <TbCheck className="text-xl" />
+                    <span>{isMarked ? 'Desmarcar' : 'Marcar'}</span>
+                </Dropdown.Item>
+            )}
+            {onDetails && (
+                <Dropdown.Item
+                    eventKey="Details"
+                    onClick={(e) => handleDropdownItemClick(e, onDetails)}
+                >
+                    <TbInfoCircle className="text-xl" />
+                    <span>Details</span>
                 </Dropdown.Item>
             )}
             <Dropdown.Item
@@ -52,14 +63,14 @@ const FileItemDropdown = (props) => {
                 onClick={(e) => handleDropdownItemClick(e, onRename)}
             >
                 <TbPencil className="text-xl" />
-                <span>Rename</span>
+                <span>Renomear</span>
             </Dropdown.Item>
             <Dropdown.Item
                 eventKey="share"
                 onClick={(e) => handleDropdownItemClick(e, onShare)}
             >
                 <TbUserPlus className="text-xl" />
-                <span>Share</span>
+                <span>Compartilhar</span>
             </Dropdown.Item>
             <Dropdown.Item
                 eventKey="share"
@@ -67,7 +78,7 @@ const FileItemDropdown = (props) => {
             >
                 <span className="flex items-center gap-2 text-error">
                     <TbTrash className="text-xl" />
-                    <span>Delete</span>
+                    <span>Excluir</span>
                 </span>
             </Dropdown.Item>
         </Dropdown>

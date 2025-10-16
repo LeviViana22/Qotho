@@ -19,15 +19,15 @@ const FileManagerDeleteDialog = () => {
         <ConfirmDialog
             isOpen={deleteDialog.open}
             type="danger"
-            title="Delete file"
+            title="Excluir arquivo"
             onClose={handleDeleteDialogClose}
             onRequestClose={handleDeleteDialogClose}
             onCancel={handleDeleteDialogClose}
             onConfirm={handleDeleteConfirm}
         >
             <p>
-                Are you sure you want to delete file? This action can&apos;t be
-                undo.{' '}
+                Tem certeza que deseja excluir o arquivo? Esta ação não pode ser
+                desfeita.{' '}
             </p>
         </ConfirmDialog>
     )

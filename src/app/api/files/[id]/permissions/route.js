@@ -21,34 +21,29 @@ export async function GET(request, { params }) {
 
         // Await params for Next.js 15 compatibility
         const { id } = await params
-        console.log('Getting download URL for file:', id)
+        console.log('Getting permissions for file:', id)
         
         if (!id) {
             return NextResponse.json({ error: 'File ID is required' }, { status: 400 })
         }
         
         try {
-            // Use the simpler and more reliable webContentLink approach
-            const downloadUrl = await GoogleDriveService.getDownloadUrl(id)
-            console.log('Download URL received:', downloadUrl ? 'present' : 'missing')
+            const permissions = await GoogleDriveService.getFilePermissions(id)
+            console.log('Permissions received:', permissions.length, 'permissions')
             
-            if (!downloadUrl) {
-                return NextResponse.json({ error: 'No download URL available for this file' }, { status: 404 })
-            }
-            
-            return NextResponse.json({ downloadUrl })
+            return NextResponse.json({ permissions })
         } catch (error) {
-            console.error('Error getting download URL:', error)
+            console.error('Error getting permissions:', error)
             console.error('Error details:', {
                 message: error.message,
                 code: error.code,
                 status: error.status,
                 response: error.response?.data
             })
-            return NextResponse.json({ error: 'Failed to get download URL' }, { status: 500 })
+            return NextResponse.json({ error: 'Failed to get permissions' }, { status: 500 })
         }
     } catch (error) {
-        console.error('Error getting download URL:', error)
-        return NextResponse.json({ error: 'Failed to get download URL' }, { status: 500 })
+        console.error('Error getting permissions:', error)
+        return NextResponse.json({ error: 'Failed to get permissions' }, { status: 500 })
     }
 }
